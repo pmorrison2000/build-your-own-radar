@@ -180,22 +180,22 @@ body {
       path {
         &.ring-arc-3 {
           stroke: none;
-          fill: $grey-light;
+          fill: $ring3;
         }
 
         &.ring-arc-2 {
           stroke: none;
-          fill: $grey;
+          fill: $ring2;
         }
 
         &.ring-arc-1 {
           stroke: none;
-          fill: $grey-dark;
+          fill: $ring1;
         }
 
         &.ring-arc-0 {
           stroke: none;
-          fill: $grey-darkest;
+          fill: $ring0;
         }
       }
 
