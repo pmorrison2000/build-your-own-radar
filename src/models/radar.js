@@ -13,10 +13,10 @@ const Radar = function () {
   blipNumber = 0
   addingQuadrant = 0
   quadrants = [
-    { order: 'first', startAngle: 90 },
-    { order: 'second', startAngle: 0 },
-    { order: 'third', startAngle: -90 },
-    { order: 'fourth', startAngle: -180 }
+    { order: 'first', startAngle: 120 }
+//    { order: 'second', startAngle: 0 },
+//    { order: 'third', startAngle: -90 },
+//    { order: 'fourth', startAngle: -180 }
   ]
   alternatives = []
   currentSheetName = ''
@@ -54,7 +54,7 @@ const Radar = function () {
   }
 
   function allQuadrants () {
-    if (addingQuadrant < 4) { throw new MalformedDataError(ExceptionMessages.LESS_THAN_FOUR_QUADRANTS) }
+    //if (addingQuadrant < 4) { throw new MalformedDataError(ExceptionMessages.LESS_THAN_FOUR_QUADRANTS) }
 
     return _.map(quadrants, 'quadrant')
   }

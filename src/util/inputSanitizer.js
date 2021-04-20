@@ -5,7 +5,7 @@ const _ = {
 
 const InputSanitizer = function () {
   var relaxedOptions = {
-    allowedTags: ['b', 'i', 'em', 'strong', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'ul',
+    allowedTags: ['b', 'i', 'em', 'strong', 'small', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'ul',
       'br', 'p', 'u'],
     allowedAttributes: {
       a: ['href']
@@ -35,8 +35,8 @@ const InputSanitizer = function () {
     blip.name = sanitizeHtml(blip.name, restrictedOptions)
     blip.isNew = sanitizeHtml(blip.isNew, restrictedOptions)
     blip.ring = sanitizeHtml(blip.ring, restrictedOptions)
-    blip.quadrant = sanitizeHtml(blip.quadrant, restrictedOptions)
-
+    blip.quadrant = 'Main' //sanitizeHtml(blip.quadrant, restrictedOptions)
+	// digital science chart is a single quadrant only
     return blip
   }
 
@@ -46,20 +46,21 @@ const InputSanitizer = function () {
     const descriptionIndex = header.indexOf('description')
     const nameIndex = header.indexOf('name')
     const isNewIndex = header.indexOf('isNew')
-    const quadrantIndex = header.indexOf('quadrant')
+    //const quadrantIndex = header.indexOf('quadrant')
     const ringIndex = header.indexOf('ring')
 
     const description = descriptionIndex === -1 ? '' : blip[descriptionIndex]
     const name = nameIndex === -1 ? '' : blip[nameIndex]
     const isNew = isNewIndex === -1 ? '' : blip[isNewIndex]
     const ring = ringIndex === -1 ? '' : blip[ringIndex]
-    const quadrant = quadrantIndex === -1 ? '' : blip[quadrantIndex]
+    //const quadrant = quadrantIndex === -1 ? '' : blip[quadrantIndex]
 
     blip.description = sanitizeHtml(description, relaxedOptions)
     blip.name = sanitizeHtml(name, restrictedOptions)
     blip.isNew = sanitizeHtml(isNew, restrictedOptions)
     blip.ring = sanitizeHtml(ring, restrictedOptions)
-    blip.quadrant = sanitizeHtml(quadrant, restrictedOptions)
+    blip.quadrant = 'Main' //sanitizeHtml(quadrant, restrictedOptions)
+	// digital science chart is a single quadrant only
 
     return blip
   }
