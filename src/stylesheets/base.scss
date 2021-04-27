@@ -237,15 +237,24 @@ body {
       text {
         &.blip-text {
           font-size: 9px;
-          font-style: italic;
           fill: $white;
+        }
+
+        &.blip-text-white {
+          font-size: 9px;
+          fill: $white;
+        }
+
+        &.blip-text-black {
+          font-size: 9px;
+          fill: $black;
         }
 
         &.line-text {
           font-weight: bold;
           text-transform: uppercase;
           fill: $black;
-          font-size: 7px;
+          font-size: 12px;
         }
       }
     }

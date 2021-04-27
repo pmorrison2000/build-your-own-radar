@@ -13,7 +13,7 @@ const Radar = function () {
   blipNumber = 0
   addingQuadrant = 0
   quadrants = [
-    { order: 'first', startAngle: 120 }
+    { order: 'first', startAngle: 95 }
 //    { order: 'second', startAngle: 0 },
 //    { order: 'third', startAngle: -90 },
 //    { order: 'fourth', startAngle: -180 }
