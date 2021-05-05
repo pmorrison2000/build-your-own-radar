@@ -275,7 +275,7 @@ const Radar = function (size, radar) {
       .attr('class', 'blip-text-shadow')
       .attr('text-anchor', 'left')
       .text(blip.name())
-	  .call(wrap, xMaxLen - 5 - blip.width / 2)
+	  .call(wrap, xMaxLen - 5 - blip.width)
 
     group.append('text')
       .attr('x', x + 4 + blip.width / 2)
@@ -283,7 +283,7 @@ const Radar = function (size, radar) {
       .attr('class', 'blip-text-' + blip.status())
       .attr('text-anchor', 'left')
       .text(blip.name())
-	  .call(wrap, xMaxLen - 5 - blip.width / 2)
+	  .call(wrap, xMaxLen - 5 - blip.width)
 
     var blipListItem = ringList.append('li')
     var blipText = blip.number() + '. ' + blip.name() + '. '
