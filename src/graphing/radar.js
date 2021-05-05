@@ -20,14 +20,6 @@ const Radar = function (size, radar) {
     return text
   })
 
-  tip.direction(function () {
-    if (d3.select('.quadrant-table.selected').node()) {
-      var selectedQuadrant = d3.select('.quadrant-table.selected')
-      if (selectedQuadrant.classed('first') || selectedQuadrant.classed('fourth')) { return 'ne' } else { return 'nw' }
-    }
-    return 'n'
-  })
-
   var ringCalculator = new RingCalculator(radar.rings().length, size)
 
   var self = {}
@@ -80,7 +72,7 @@ const Radar = function (size, radar) {
         .attr('y', centerY() + 30 - y)
         .attr('x', centerX() + x - 30)
         .attr('text-anchor', 'middle')
-        .text(ring.name())
+        .text('Horizon ' + i + 1) //ring.name())
     })
   }
 
@@ -299,12 +291,13 @@ const Radar = function (size, radar) {
 	  .call(wrap, xMaxLen - 5 - blip.width / 2)
 
     var blipListItem = ringList.append('li')
-    var blipText = blip.number() + '. ' + blip.name() + (blip.topic() ? ('. - ' + blip.topic()) : '')
+    var blipText = blip.number() + '. ' + blip.name() + (blip.topic() ? ('. <small>' + blip.topic() + '</small>') : '')
     blipListItem.append('div')
       .attr('class', 'blip-list-item')
       .attr('id', 'blip-list-item-' + blip.number())
       .text(blipText)
-
+    console.log('BlipText: ' + blipText)
+	
     var blipItemDescription = blipListItem.append('div')
       .attr('id', 'blip-description-' + blip.number())
       .attr('class', 'blip-item-description')
