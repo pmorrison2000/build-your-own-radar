@@ -147,7 +147,8 @@ header {
   }
 
   #alternative-buttons {
-    margin-bottom: 50px;
+    margin-bottom: 5px;
+	margin-top: 5px;
 
     .highlight {
       border-bottom: none;
@@ -181,7 +182,7 @@ header {
 }
 
 .ui-autocomplete {
-  width: 275px !important;
+  width: 375px !important;
 
   .ui-autocomplete-quadrant {
     font-size: 14px;

@@ -464,12 +464,6 @@ const Radar = function (size, radar) {
       .style('cursor', 'pointer')
       .on('click', redrawFullRadar)
 
-    buttonsGroup = header.append('div')
-      .classed('buttons-group', true)
-
-    quadrantButtons = buttonsGroup.append('div')
-      .classed('quadrant-btn--group', true)
-
     alternativeDiv = header.append('div')
       .attr('id', 'alternative-buttons')
 
@@ -477,30 +471,6 @@ const Radar = function (size, radar) {
   }
 
   function plotQuadrantButtons (quadrants, header) {
-    function addButton (quadrant) {
-      radarElement
-        .append('div')
-        .attr('class', 'quadrant-table ' + quadrant.order)
-
-      quadrantButtons.append('div')
-        .attr('class', 'button ' + quadrant.order + ' full-view')
-        .text(quadrant.quadrant.name())
-        .on('mouseover', mouseoverQuadrant.bind({}, quadrant.order))
-        .on('mouseout', mouseoutQuadrant.bind({}, quadrant.order))
-        .on('click', selectQuadrant.bind({}, quadrant.order, quadrant.startAngle))
-    }
-
-    _.each([0, 1, 2, 3], function (i) {
-      addButton(quadrants[i])
-    })
-
-    buttonsGroup.append('div')
-      .classed('print-radar-btn', true)
-      .append('div')
-      .classed('print-radar button no-capitalize', true)
-      .text('Print this radar')
-      .on('click', window.print.bind(window))
-
     alternativeDiv.append('div')
       .classed('search-box', true)
       .append('input')
@@ -567,6 +537,8 @@ const Radar = function (size, radar) {
     if (alternatives.length) {
       plotAlternativeRadars(alternatives, currentSheet)
     }
+
+    plotQuadrantButtons(quadrants, header)
 
     radarElement.style('height', size + BLIP_HEIGHT + 'px')
     svg = radarElement.append('svg').call(tip)

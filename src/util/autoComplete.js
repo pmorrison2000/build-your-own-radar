@@ -15,6 +15,7 @@ $.widget('custom.radarcomplete', $.ui.autocomplete, {
         ul.append(`<li class='ui-autocomplete-quadrant'>${quadrantName}</li>`)
         currentQuadrant = quadrantName
       }
+	  item.label = item.blip.number() + '. ' + item.label // add the blip number to the search results list
       const li = this._renderItemData(ul, item)
       if (quadrantName) {
         li.attr('aria-label', `${quadrantName}:${item.value}`)
