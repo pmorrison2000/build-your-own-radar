@@ -72,7 +72,7 @@ const Radar = function (size, radar) {
         .attr('y', centerY() + 30 - y)
         .attr('x', centerX() + x - 30)
         .attr('text-anchor', 'middle')
-        .text('Horizon ' + i + 1) //ring.name())
+        .text(ring.name())
     })
   }
 
@@ -111,7 +111,7 @@ const Radar = function (size, radar) {
 	  .attr('transform', 'scale(' + (22 / 64) + ') translate(' + (-404 + x * (64 / 22) - 17) + ', ' + (-282 + y * (64 / 22) - 17) + ')')
   }
   
-  function square(blip, x, y, order, group) {
+  function square(blip, x, y, order, status, group) {
     return (group || svg).append('rect')
 	.attr('x', x - HALF_BLIP_HEIGHT)
 	.attr('y', y - HALF_BLIP_HEIGHT)
@@ -119,7 +119,7 @@ const Radar = function (size, radar) {
 	.attr('height', BLIP_HEIGHT)
 	.attr('stroke', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
 	.attr('fill', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
-    .attr('class', order)
+    .attr('class', 'blip-icon-' + status) // TODO: move the stroke and fill colours to classes based on status
   }
 
   function addRing (ring, order) {
@@ -260,12 +260,7 @@ const Radar = function (size, radar) {
 
     var group = quadrantGroup.append('g').attr('class', 'blip-link').attr('id', 'blip-link-' + blip.number())
 
-	square(blip, x, y, order, group)
-    //if (blip.status() == 'new') {
-    //  triangle(blip, x, y, order, group)
-    //} else {
-    //  circle(blip, x, y, order, group)
-    //}
+	square(blip, x, y, order, blip.status(), group)
 
     group.append('text')
       .attr('x', x)
@@ -291,11 +286,15 @@ const Radar = function (size, radar) {
 	  .call(wrap, xMaxLen - 5 - blip.width / 2)
 
     var blipListItem = ringList.append('li')
-    var blipText = blip.number() + '. ' + blip.name() + (blip.topic() ? ('. <small>' + blip.topic() + '</small>') : '')
+    var blipText = blip.number() + '. ' + blip.name() + '. '
     blipListItem.append('div')
       .attr('class', 'blip-list-item')
       .attr('id', 'blip-list-item-' + blip.number())
       .text(blipText)
+      .append('div')
+      .attr('class', 'blip-list-theme')
+      .attr('id', 'blip-list-theme-' + blip.number())
+      .text(blip.topic())
     console.log('BlipText: ' + blipText)
 	
     var blipItemDescription = blipListItem.append('div')
@@ -332,10 +331,6 @@ const Radar = function (size, radar) {
     }
 
     blipListItem.on('click', clickBlip)
-  }
-
-  function removeHomeLink () {
-    d3.select('.home-link').remove()
   }
 
   function removeRadarLegend () {
@@ -399,7 +394,6 @@ const Radar = function (size, radar) {
   }
 
   function redrawFullRadar () {
-    removeHomeLink()
     removeRadarLegend()
     tip.hide()
     d3.selectAll('g.blip-link').attr('opacity', 1.0)
@@ -430,7 +424,7 @@ const Radar = function (size, radar) {
   function searchBlip (_e, ui) {
     const { blip, quadrant } = ui.item
     const isQuadrantSelected = d3.select('div.button.' + quadrant.order).classed('selected')
-    selectQuadrant.bind({}, quadrant.order, quadrant.startAngle)()
+    selectQuadrant.bind({}, quadrant.order)()
     const selectedDesc = d3.select('#blip-description-' + blip.number())
     d3.select('.blip-item-description.expanded').node() !== selectedDesc.node() &&
         d3.select('.blip-item-description.expanded').classed('expanded', false)
@@ -471,6 +465,10 @@ const Radar = function (size, radar) {
   }
 
   function plotQuadrantButtons (quadrants, header) {
+    radarElement
+      .append('div')
+      .attr('class', 'quadrant-table ' + quadrants[0].order)
+
     alternativeDiv.append('div')
       .classed('search-box', true)
       .append('input')
@@ -492,6 +490,26 @@ const Radar = function (size, radar) {
       '<a href="https://github.com/thoughtworks/build-your-own-radar">Build Your Own Radar (github)</a> available for download and self-hosting.')
   }
 
+  function selectQuadrant (order) {
+    d3.selectAll('.home-link').classed('selected', false)
+    //createHomeLink(d3.select('header'))
+
+    d3.selectAll('.button').classed('selected', false).classed('full-view', false)
+    d3.selectAll('.button.' + order).classed('selected', true)
+    d3.selectAll('.quadrant-table').classed('selected', false)
+    d3.selectAll('.quadrant-table.' + order).classed('selected', true)
+    d3.selectAll('.blip-item-description').classed('expanded', false)
+
+    d3.selectAll('.quadrant-group')
+      .style('pointer-events', 'auto')
+
+//    d3.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')')
+//      .transition()
+//      .duration(ANIMATION_DURATION)
+//      .style('pointer-events', 'none')
+//      .attr('transform', 'translate(' + translateXAll + ',' + translateYAll + ')scale(0)')
+  }
+  
   self.init = function () {
     radarElement = d3.select('body').append('div').attr('id', 'radar')
     return self
@@ -551,6 +569,8 @@ const Radar = function (size, radar) {
     })
 
     plotRadarFooter()
+	
+	selectQuadrant('first')
   }
 
   return self
