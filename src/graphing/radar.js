@@ -492,7 +492,6 @@ const Radar = function (size, radar) {
 
   function selectQuadrant (order) {
     d3.selectAll('.home-link').classed('selected', false)
-    //createHomeLink(d3.select('header'))
 
     d3.selectAll('.button').classed('selected', false).classed('full-view', false)
     d3.selectAll('.button.' + order).classed('selected', true)
@@ -503,11 +502,6 @@ const Radar = function (size, radar) {
     d3.selectAll('.quadrant-group')
       .style('pointer-events', 'auto')
 
-//    d3.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')')
-//      .transition()
-//      .duration(ANIMATION_DURATION)
-//      .style('pointer-events', 'none')
-//      .attr('transform', 'translate(' + translateXAll + ',' + translateYAll + ')scale(0)')
   }
   
   self.init = function () {
