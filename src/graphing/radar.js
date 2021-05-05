@@ -8,6 +8,8 @@ const QueryParams = require('../util/queryParamProcessor')
 const AutoComplete = require('../util/autoComplete')
 
 const MIN_BLIP_WIDTH = 12
+const HALF_BLIP_HEIGHT = 7
+const BLIP_HEIGHT = 2 * HALF_BLIP_HEIGHT
 const ANIMATION_DURATION = 100
 const SLICE = 95
 
@@ -116,6 +118,17 @@ const Radar = function (size, radar) {
       .attr('d', circlePath())
 	  .attr('transform', 'scale(' + (22 / 64) + ') translate(' + (-404 + x * (64 / 22) - 17) + ', ' + (-282 + y * (64 / 22) - 17) + ')')
   }
+  
+  function square(blip, x, y, order, group) {
+    return (group || svg).append('rect')
+	.attr('x', x - HALF_BLIP_HEIGHT)
+	.attr('y', y - HALF_BLIP_HEIGHT)
+	.attr('width', BLIP_HEIGHT)
+	.attr('height', BLIP_HEIGHT)
+	.attr('stroke', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
+	.attr('fill', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
+    .attr('class', order)
+  }
 
   function addRing (ring, order) {
     var table = d3.select('.quadrant-table.' + order)
@@ -125,34 +138,27 @@ const Radar = function (size, radar) {
 
   function calculateBlipCoordinates (blip, chance, minRadius, maxRadius, startAngle, blipTotal, blipIndex) {
     var gap = maxRadius - minRadius
-	var margin = 1/5 * gap
-	if(minRadius == 0) margin = 1/8 * gap
+	var margin = 1/8 * gap
+	if(minRadius == 0) margin = 1/10 * gap // smaller margin for ring zero (there is less space)
 	var standOff = minRadius + margin
 
 	// our quadrant is cut off at the top by the viewbox because centerY is not zero, so we cap topmostY here with a small margin for the font size/blip size
-    var topmostY = Math.min(centerY() - 14, minRadius + 6/8 * gap) // no cos adjustment, we assume vertical axis, ie 0 angle
-	var bottommostY = 14 // for larger slices than 90 degrees we waste space at the bottom, but meh
+    var topmostY = Math.min(centerY() - BLIP_HEIGHT, minRadius + 7/8 * gap) // no cos adjustment, we assume vertical axis, ie 0 angle
+	var bottommostY = HALF_BLIP_HEIGHT // for larger slices than 90 degrees we waste space at the bottom, but meh
 
-	var ySpaced = topmostY - (blipIndex/(blipTotal-1)) * (topmostY - bottommostY) // evenly spaced y coordinates
-    
+    var yGap = (topmostY - bottommostY) / (blipTotal - 1) 
+	var ySpaced = topmostY - (blipIndex * yGap) // evenly spaced y coordinates
 	xMargin = margin
-	if(ySpaced < standOff) xMargin = Math.sqrt(standOff * standOff - ySpaced * ySpaced)
+	if(ySpaced < standOff) xMargin = Math.sqrt(standOff * standOff - ySpaced * ySpaced) // our left margin is xMargin or the chord length of inner radius (standOff)
 	if(xMargin < margin) xMargin = margin // tweak to fix a wobble in the inner ring
-	console.log(blipIndex + '/' + blipTotal + ' (' + blip.number() + '): ySpaced = ' + ySpaced + ', xMargin = ' + xMargin)
 
-    var adjustX = Math.sin(toRadian(startAngle)) - Math.cos(toRadian(startAngle))
-    var adjustY = -Math.cos(toRadian(startAngle)) - Math.sin(toRadian(startAngle))
-
-    //var radius = chance.floating({ min: minRadius + blip.width / 2, max: maxRadius - blip.width / 2 })
-	var radius = minRadius + 1/4 * (maxRadius - minRadius) + chance.floating({min: 0, max: blip.width + 10})
-    var angleDelta = Math.asin(blip.width / 2 / radius) * 180 / Math.PI
-    angleDelta = angleDelta > (SLICE / 2) ? (SLICE / 2) : angleDelta
-    var angle = toRadian(chance.integer({ min: angleDelta, max: SLICE - angleDelta }))
-
-    var x = centerX() + xMargin //radius * Math.cos(angle) * adjustX
-    var y = centerY() - ySpaced // + radius * Math.sin(angle) * adjustY
-    console.log('x,y = ' + x + ',' + y)
-    return [x, y]
+    xMax = Math.sqrt(maxRadius * maxRadius - ySpaced * ySpaced) // the outermost x coordinate for this ring at height ySpaced
+	console.log(blipIndex + '/' + blipTotal + ' (' + blip.number() + '): ySpaced = %d, xMargin = %d, xMax = %d', ySpaced, xMargin, xMax)
+	
+    var x = centerX() + xMargin
+    var y = centerY() - ySpaced
+    console.log('x,y = %d, %d', x, y)
+    return [x, y, xMax - x]
   }
 
   function thereIsCollision (blip, coordinates, allCoordinates) {
@@ -216,67 +222,81 @@ const Radar = function (size, radar) {
   }
 
   function findBlipCoordinates (blip, minRadius, maxRadius, startAngle, allBlipCoordinatesInRing, blipTotal, blipIndex) {
-    const maxIterations = 200
     var coordinates = calculateBlipCoordinates(blip, chance, minRadius, maxRadius, startAngle, blipTotal, blipIndex)
-    var iterationCounter = 0
-    var foundAPlace = false
 
-    while (iterationCounter < maxIterations) {
-      if (thereIsCollision(blip, coordinates, allBlipCoordinatesInRing)) {
-        coordinates = calculateBlipCoordinates(blip, chance, minRadius, maxRadius, startAngle, blipTotal, blipIndex)
-      } else {
-        foundAPlace = true
-        break
-      }
-      iterationCounter++
-    }
-
-    if (!foundAPlace && blip.width > MIN_BLIP_WIDTH) {
-      blip.width = blip.width - 1
-      return findBlipCoordinates(blip, minRadius, maxRadius, startAngle, allBlipCoordinatesInRing, blipTotal, blipIndex)
-    } else {
-      return coordinates
-    }
+	return coordinates
   }
+
+  // lifted straight outta StackOverflow, https://stackoverflow.com/questions/24784302/wrapping-text-in-d3?lq=1
+  function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0, //parseFloat(text.attr("dy")),
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                            .text(word);
+            }
+        }
+    });
+  }  
 
   function drawBlipInCoordinates (blip, coordinates, order, quadrantGroup, ringList) {
     var x = coordinates[0]
     var y = coordinates[1]
+	var xMaxLen = coordinates[2]
 
     var group = quadrantGroup.append('g').attr('class', 'blip-link').attr('id', 'blip-link-' + blip.number())
 
-    if (blip.isNew()) {
-      triangle(blip, x, y, order, group)
-    } else {
-      circle(blip, x, y, order, group)
-    }
+	square(blip, x, y, order, group)
+    //if (blip.status() == 'new') {
+    //  triangle(blip, x, y, order, group)
+    //} else {
+    //  circle(blip, x, y, order, group)
+    //}
 
     group.append('text')
       .attr('x', x)
       .attr('y', y + 4)
-      .attr('class', 'blip-text')
-      // derive font-size from current blip width
-      .style('font-size', ((blip.width * 10) / 22) + 'px')
+      .attr('class', 'blip-number-' + blip.status())
       .attr('text-anchor', 'middle')
       .text(blip.number())
 
-//    group.append('text')
-//      .attr('x', x + 4 + blip.width/2 + 1)
-//      .attr('y', y + 4 + 1)
-//      .attr('class', 'blip-text-white')
-//      // derive font-size from current blip width
-//      //.style('font-size', ((blip.width * 10) / 22) + 'px')
-//      .attr('text-anchor', 'left')
-//      .text(blip.name())
+    group.append('text')
+      .attr('x', x + 5 + blip.width / 2)
+      .attr('y', y + 5)
+      .attr('class', 'blip-text-shadow')
+      .attr('text-anchor', 'left')
+      .text(blip.name())
+	  .call(wrap, xMaxLen - 5 - blip.width / 2)
 
     group.append('text')
       .attr('x', x + 4 + blip.width / 2)
       .attr('y', y + 4)
-      .attr('class', 'blip-text-black')
-      // derive font-size from current blip width
-      //.style('font-size', ((blip.width * 10) / 22) + 'px')
+      .attr('class', 'blip-text-' + blip.status())
       .attr('text-anchor', 'left')
       .text(blip.name())
+	  .call(wrap, xMaxLen - 5 - blip.width / 2)
 
     var blipListItem = ringList.append('li')
     var blipText = blip.number() + '. ' + blip.name() + (blip.topic() ? ('. - ' + blip.topic()) : '')
@@ -285,7 +305,6 @@ const Radar = function (size, radar) {
       .attr('id', 'blip-list-item-' + blip.number())
       .text(blipText)
 
-	  
     var blipItemDescription = blipListItem.append('div')
       .attr('id', 'blip-description-' + blip.number())
       .attr('class', 'blip-item-description')
@@ -556,9 +575,9 @@ const Radar = function (size, radar) {
       plotAlternativeRadars(alternatives, currentSheet)
     }
 
-    radarElement.style('height', size + 14 + 'px')
+    radarElement.style('height', size + BLIP_HEIGHT + 'px')
     svg = radarElement.append('svg').call(tip)
-    svg.attr('id', 'radar-plot').attr('width', size).attr('height', size + 14)
+    svg.attr('id', 'radar-plot').attr('width', size).attr('height', size + BLIP_HEIGHT)
 
     _.each(quadrants, function (quadrant) {
       var quadrantGroup = plotQuadrant(rings, quadrant)

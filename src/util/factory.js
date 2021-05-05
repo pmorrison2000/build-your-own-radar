@@ -4,6 +4,8 @@ const d3 = require('d3')
 const Tabletop = require('tabletop')
 const _ = {
   map: require('lodash/map'),
+  reduce: require('lodash/reduce'),
+  concat: require('lodash/concat'),
   uniqBy: require('lodash/uniqBy'),
   capitalize: require('lodash/capitalize'),
   each: require('lodash/each')
@@ -33,7 +35,6 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
   var rings = _.map(_.uniqBy(blips, 'ring'), 'ring')
   var ringMap = {}
   var maxRings = 4
-
   _.each(rings, function (ringName, i) {
     if (i === maxRings) {
       throw new MalformedDataError(ExceptionMessages.TOO_MANY_RINGS)
@@ -46,7 +47,7 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
     if (!quadrants[blip.quadrant]) {
       quadrants[blip.quadrant] = new Quadrant(_.capitalize(blip.quadrant))
     }
-    quadrants[blip.quadrant].add(new Blip(blip.name, ringMap[blip.ring], blip.isNew.toLowerCase() === 'true', blip.topic, blip.description))
+    quadrants[blip.quadrant].add(new Blip(blip.name, ringMap[blip.ring], blip.status.toLowerCase(), blip.topic, blip.description))
   })
 
   var radar = new Radar()
@@ -64,7 +65,7 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
     radar.setCurrentSheet(currentRadarName)
   }
 
-  var size = (window.innerHeight - 133) < 800 ? 800 : window.innerHeight - 133
+  var size = (window.innerHeight - 133) < 1000 ? 1000 : window.innerHeight - 133
 
   new GraphingRadar(size, radar).init().plot()
 }
@@ -166,7 +167,10 @@ const CSVDocument = function (url) {
       var contentValidator = new ContentValidator(columnNames)
       contentValidator.verifyContent()
       contentValidator.verifyHeaders()
-      var blips = _.map(data, new InputSanitizer().sanitize)
+      //var blips = _.map(data, new InputSanitizer().sanitize)
+      var blips = _.reduce(data, new InputSanitizer().reducer, [])
+	  //console.log('Blips:')
+	  //console.log(blips)
       plotRadar(FileName(url), blips, 'CSV File', [])
     } catch (exception) {
       plotErrorMessage(exception)

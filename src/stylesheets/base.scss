@@ -235,21 +235,63 @@ body {
       }
 
       text {
-        &.blip-text {
-          font-size: 9px;
+        &.blip-number-ok {
+          font-size: 8px;
           fill: $white;
         }
 
+        &.blip-number-new {
+          font-size: 8px;
+          fill: $white;
+        }
+
+        &.blip-number-moved {
+          font-size: 8px;
+          fill: $black;
+        }
+
+        &.blip-number-strike {
+          font-size: 8px;
+          fill: $white;
+		  text-decoration: line-through;
+        }
+
+        &.blip-text-ok {
+          font-size: 12px;
+          fill: $black;
+        }
+
+        &.blip-text-new {
+          font-size: 12px;
+          fill: $red;
+        }
+
+        &.blip-text-moved {
+          font-size: 12px;
+          fill: $yellow;
+        }
+
+        &.blip-text-strike {
+          font-size: 12px;
+          fill: $grey-text;
+		  text-decoration: line-through;
+        }
+
         &.blip-text-white {
-          font-size: 9px;
+          font-size: 12px;
           fill: $white;
         }
 
         &.blip-text-black {
-          font-size: 9px;
+          font-size: 12px;
           fill: $black;
         }
 
+        &.blip-text-shadow {
+          font-size: 12px;
+          fill: $shadow;
+        }
+		
         &.line-text {
           font-weight: bold;
           text-transform: uppercase;

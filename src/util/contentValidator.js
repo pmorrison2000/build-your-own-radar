@@ -21,7 +21,9 @@ const ContentValidator = function (columnNames) {
   }
 
   self.verifyHeaders = function () {
-    _.each(['name', 'ring', 'isNew', 'description'], function (field) {
+	//console.log('Column names:')
+	//console.log(columnNames)
+    _.each(['Technology', 'Horizon', 'Theme', 'Description', 'Status'], function (field) {
       if (columnNames.indexOf(field) === -1) {
         throw new MalformedDataError(ExceptionMessages.MISSING_HEADERS)
       }

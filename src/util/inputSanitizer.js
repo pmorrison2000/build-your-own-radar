@@ -31,36 +31,55 @@ const InputSanitizer = function () {
   var self = {}
   self.sanitize = function (rawBlip) {
     var blip = trimWhiteSpaces(rawBlip)
-    blip.description = sanitizeHtml(blip.description, relaxedOptions)
-    blip.name = sanitizeHtml(blip.name, restrictedOptions)
-    blip.isNew = sanitizeHtml(blip.isNew, restrictedOptions)
-    blip.ring = sanitizeHtml(blip.ring, restrictedOptions)
-    blip.quadrant = 'Main' //sanitizeHtml(blip.quadrant, restrictedOptions)
-	// digital science chart is a single quadrant only
+	//console.log('Rawblip after trimming:')
+	//console.log(blip)
+    blip.description = sanitizeHtml(blip.Description, relaxedOptions)
+    blip.name = sanitizeHtml(blip.Technology, relaxedOptions)
+    blip.status = sanitizeHtml(blip.Status, restrictedOptions)
+    blip.ring = sanitizeHtml(blip.Horizon, restrictedOptions)
+    blip.topic = sanitizeHtml(blip.Theme, restrictedOptions)
+
     return blip
+  }
+
+  self.reducer = function(result, value) {
+	  var processedBlip = self.sanitize(value)
+	  switch(processedBlip.Status)
+	  {
+		  case 'ok':
+		  case 'new':
+		  case 'strike':
+		  case 'moved':
+			result.push(processedBlip)
+			break
+		  case 'hide':
+		    break
+		  default:
+		    console.log('Unknown status: ' + processedBlip.Status)
+	  }
+	  return result
   }
 
   self.sanitizeForProtectedSheet = function (rawBlip, header) {
     var blip = trimWhiteSpaces(rawBlip)
 
-    const descriptionIndex = header.indexOf('description')
-    const nameIndex = header.indexOf('name')
-    const isNewIndex = header.indexOf('isNew')
-    //const quadrantIndex = header.indexOf('quadrant')
-    const ringIndex = header.indexOf('ring')
+    const descriptionIndex = header.indexOf('Description')
+    const nameIndex = header.indexOf('Technology')
+    const statusIndex = header.indexOf('Status')
+    const ringIndex = header.indexOf('Horizon')
+    const topicIndex = header.indexOf('Theme')
 
     const description = descriptionIndex === -1 ? '' : blip[descriptionIndex]
     const name = nameIndex === -1 ? '' : blip[nameIndex]
-    const isNew = isNewIndex === -1 ? '' : blip[isNewIndex]
+    const status = statusIndex === -1 ? '' : blip[statusIndex]
     const ring = ringIndex === -1 ? '' : blip[ringIndex]
-    //const quadrant = quadrantIndex === -1 ? '' : blip[quadrantIndex]
+    const topic = topicIndex === -1 ? '' : blip[topicIndex]
 
     blip.description = sanitizeHtml(description, relaxedOptions)
-    blip.name = sanitizeHtml(name, restrictedOptions)
-    blip.isNew = sanitizeHtml(isNew, restrictedOptions)
+    blip.name = sanitizeHtml(name, relaxedOptions)
+    blip.status = sanitizeHtml(status, restrictedOptions)
     blip.ring = sanitizeHtml(ring, restrictedOptions)
-    blip.quadrant = 'Main' //sanitizeHtml(quadrant, restrictedOptions)
-	// digital science chart is a single quadrant only
+    blip.topic = sanitizeHtml(topic, restrictedOptions)
 
     return blip
   }
