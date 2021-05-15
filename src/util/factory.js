@@ -224,7 +224,7 @@ const GoogleSheetInput = function () {
         .attr('class', 'input-sheet')
       setDocumentTitle()
 
-      //plotLogo(content)
+      plotLogo(content)
 
       var bannerText = '<div><h1>Build your own Horizon Chart</h1></div>'
 
@@ -260,9 +260,9 @@ function plotLoading (content) {
 }
 
 function plotLogo (content) {
-//  content.append('div')
-//    .attr('class', 'input-sheet__logo')
-//    .html('<a href="https://www.thoughtworks.com"><img src="/images/tw-logo.png" / ></a>')
+  content.append('div')
+    .attr('class', 'input-sheet__logo')
+    .html('<a href="https://www.thoughtworks.com"><img src="/images/tw-logo.png" / ></a>')
 }
 
 function plotFooter (content) {
