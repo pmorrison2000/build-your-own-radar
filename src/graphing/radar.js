@@ -418,7 +418,7 @@ const Radar = function (size, radar) {
 
   function searchBlip (_e, ui) {
     const { blip, quadrant } = ui.item
-    const isQuadrantSelected = d3.select('div.button.' + quadrant.order).classed('selected')
+    const isQuadrantSelected = true //d3.select('div.button.' + quadrant.order).classed('selected')
     selectQuadrant.bind({}, quadrant.order)()
     const selectedDesc = d3.select('#blip-description-' + blip.number())
     d3.select('.blip-item-description.expanded').node() !== selectedDesc.node() &&
@@ -463,8 +463,7 @@ const Radar = function (size, radar) {
     radarElement
       .append('div')
       .attr('class', 'quadrant-table ' + quadrants[0].order)
-
-    alternativeDiv.append('div')
+      .append('div')
       .classed('search-box', true)
       .append('input')
       .attr('id', 'auto-complete')

@@ -143,21 +143,21 @@ header {
     .multiple-sheet-button {
       margin-right: 10px;
     }
-
-    .search-radar {
-      border: 1px solid #aaa;
-      background-color: inherit;
-      background-image: url("/images/search-logo-2x.svg");
-      background-repeat: no-repeat;
-      background-position: 10px;
-    }
-
-    input {
-      padding-left: 35px;
-      width: 275px;
-    }
   }
 }
+
+.search-radar {
+  border: 1px solid #aaa;
+  background-color: inherit;
+  background-image: url("/images/search-logo-2x.svg");
+  background-repeat: no-repeat;
+  background-position: 10px;
+}
+
+input {
+  padding-left: 35px;
+  width: 275px;
+}  
 
 .ui-autocomplete {
   width: 375px !important;
@@ -177,4 +177,15 @@ header {
       padding: 0 10px;
     }
   }
+}
+
+.ui-helper-hidden-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px
 }
