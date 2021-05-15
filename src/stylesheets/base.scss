@@ -95,36 +95,11 @@ body {
   }
 
   .blip-item-description {
-    padding: 0 15px;
+    padding: 0 5px;
   }
 
   header {
     text-align: left;
-
-    .radar-title .radar-title__text {
-      font-size: 40px;
-      width: 100%;
-      padding: 40px;
-      display: block;
-    }
-
-    .radar-title .radar-title__logo {
-      display: block;
-      width: auto;
-
-      a {
-        padding: 40px 10px 0;
-        display: block;
-
-        &::after {
-          display: none;
-        }
-      }
-
-      img {
-        max-width: 150px;
-      }
-    }
 
     .buttons-group {
       display: none;
@@ -164,13 +139,12 @@ body {
     width: 100%;
     margin: 0 auto;
     position: relative;
+	display: inline-block;
+	white-space: nowrap;
 
     svg#radar-plot {
-	  float: left;
-      margin: 10 auto;
+      margin-left: 10px;
       transition: all 1s ease;
-      position: absolute;
-	  left: 10px;
 
       .legend {
         visibility: hidden;
@@ -288,11 +262,6 @@ body {
           fill: $black;
         }
 
-        &.blip-text-shadow {
-          font-size: 12px;
-          fill: $shadow;
-        }
-		
         &.line-text {
           font-weight: bold;
           text-transform: uppercase;
@@ -310,7 +279,6 @@ body {
 
       max-height: 0;
       max-width: 0;
-      position: absolute;
       overflow: hidden;
 
       transition: max-height 0.5s ease 1s;
@@ -322,34 +290,12 @@ body {
         font-weight: bold;
       }
 
-      &.first {
-        &.selected {
-          float: right;
-        }
-      }
-
-      &.second {
-        &.selected {
-          float: left;
-        }
-      }
-
-      &.third {
-        &.selected {
-          float: left;
-        }
-      }
-
-      &.fourth {
-        &.selected {
-          float: right;
-        }
-      }
-
       &.selected {
-        position: relative;
-        max-height: 10000px;
+		overflow: auto;
+        max-height: 100%;
         max-width: 40%;
+		padding-left: 10px;
+		white-space: normal;
       }
 
       ul {
@@ -377,6 +323,7 @@ body {
             cursor: pointer;
             font-size: 9pt;
             font-weight: 100;
+			margin-left: 20px;
 
             &.highlight {
               color: white;
@@ -393,10 +340,10 @@ body {
               margin: 0;
               border-top: 1px solid rgb(119, 119, 119);
               border-bottom: 1px solid rgb(119, 119, 119);
-              padding: 20px;
+              padding: 10px;
               color: $black;
               font-weight: 100;
-              font-size: 12pt;
+              font-size: 10pt;
             }
 
             transition: max-height 0.2s ease;
