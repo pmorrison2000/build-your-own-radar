@@ -324,7 +324,7 @@ const Radar = function (size, radar) {
         d3.event.stopPropagation()
       })
     }
-
+    group.on('click', clickBlip)
     blipListItem.on('click', clickBlip)
   }
 
