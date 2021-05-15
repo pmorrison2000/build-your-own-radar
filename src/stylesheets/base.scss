@@ -31,7 +31,7 @@ body {
     font-weight: normal;
   }
 
-  #radar-plot {
+  #radar-plot, tag-table {
     display: none;
   }
 
@@ -355,5 +355,43 @@ body {
         }
       }
     }
+	
+    div.tag-table {
+	  overflow: auto;
+      max-height: 100%;
+      max-width: 40%;
+      padding-left: 10px;
+	  white-space: normal;
+
+      h3 {
+        text-transform: uppercase;
+        font-size: $baseFont;
+        margin: 0;
+        font-weight: bold;
+      }
+
+      ul {
+        padding: 0;
+        margin-left: 0;
+
+        li {
+          list-style-type: none;
+          padding-left: 0;
+
+          .tag-list-item {
+            padding: 2px 5px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: $baseFont;
+            font-weight: 400;
+
+            &.highlight {
+              color: white;
+              background-color: rgba(0, 0, 0, 0.8);
+            }
+		  }
+        }
+      }
+    }	
   }
 }

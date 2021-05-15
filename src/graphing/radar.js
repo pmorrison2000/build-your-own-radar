@@ -299,6 +299,11 @@ const Radar = function (size, radar) {
       .attr('id', 'blip-list-theme-' + blip.number())
       .text(blip.topic())
 
+	blip.tags().forEach(function(tag) {
+		var cls = internalTag(tag)
+		group.classed(cls, true)
+	})
+
     var mouseOver = function () {
       d3.selectAll('g.blip-link').attr('opacity', 0.3)
       group.attr('opacity', 1.0)
@@ -474,6 +479,41 @@ const Radar = function (size, radar) {
 	d3.selectAll('.quadrant-table.' + quadrants[0].order).classed('selected', true)
   }
 
+  function internalTag(tag) {
+	  return 'tag-list-item-' + encodeURIComponent(tag.replace(/ /g,'', true)).replace(/%/g,'')
+  }
+  
+  function plotTags (tags) {
+    var tagDiv = radarElement
+      .append('div')
+      .attr('class', 'tag-table')
+	  
+    tagDiv.append('h3').text('Tags')
+	var tagList = tagDiv.append('ul')
+	
+	_.each(tags, function (tag) {
+	  var itag = internalTag(tag)
+      var tagListItem = tagList.append('li')
+      tagListItem.append('div')
+        .attr('class', 'tag-list-item')
+        .attr('id', itag)
+        .text(tag)
+
+      var mouseOver = function () {
+        d3.selectAll('g.blip-link').attr('opacity', 0.1)
+		d3.selectAll('g.' + itag).attr('opacity', 1.0)
+        tagListItem.selectAll('.tag-list-item').classed('highlight', true)
+      }
+
+      var mouseOut = function () {
+        d3.selectAll('g.blip-link').attr('opacity', 1.0)
+        tagListItem.selectAll('.tag-list-item').classed('highlight', false)
+      }
+
+      tagListItem.on('mouseover', mouseOver).on('mouseout', mouseOut)
+	})
+  }
+  
   function plotRadarFooter () {
     d3.select('body')
       .insert('div', '#radar-plot + *')
@@ -561,6 +601,7 @@ const Radar = function (size, radar) {
       plotBlips(quadrantGroup, rings, quadrant)
     })
 
+	plotTags(radar.getTags())
     plotRadarFooter()
 	
 	selectQuadrant('first')

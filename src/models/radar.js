@@ -54,6 +54,10 @@ const Radar = function () {
     addingQuadrant++
   }
   
+  self.getTags = function() {
+	  return tags
+  }
+  
   self.setTags = function(inputTags) {
 	  tags = inputTags
   }
