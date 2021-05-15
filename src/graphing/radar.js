@@ -393,7 +393,7 @@ const Radar = function (size, radar) {
     tip.hide()
     d3.selectAll('g.blip-link').attr('opacity', 1.0)
 
-    svg.style('left', 0).style('right', 0)
+    svg.style('left', 10).style('right', 0)
 
     d3.selectAll('.button')
       .classed('selected', false)
@@ -451,7 +451,7 @@ const Radar = function (size, radar) {
       .append('h1')
       .text(document.title)
       .style('cursor', 'pointer')
-      .on('click', redrawFullRadar)
+      //.on('click', redrawFullRadar)
 
     alternativeDiv = header.append('div')
       .attr('id', 'alternative-buttons')
@@ -472,6 +472,7 @@ const Radar = function (size, radar) {
       .classed('search-radar', true)
 
     AutoComplete('#auto-complete', quadrants, searchBlip)
+	d3.selectAll('.quadrant-table.' + quadrants[0].order).classed('selected', true)
   }
 
   function plotRadarFooter () {
@@ -545,11 +546,15 @@ const Radar = function (size, radar) {
       plotAlternativeRadars(alternatives, currentSheet)
     }
 
-    plotQuadrantButtons(quadrants, header)
-
     radarElement.style('height', size + BLIP_HEIGHT + 'px')
-    svg = radarElement.append('svg').call(tip)
-    svg.attr('id', 'radar-plot').attr('width', size).attr('height', size + BLIP_HEIGHT)
+	dd = radarElement.append('div').attr('class','svgdiv').attr('style','float:left')
+    svg = dd.append('svg').call(tip)
+    svg.attr('id', 'radar-plot')
+	  .attr('width', size)
+	  .attr('height', size + BLIP_HEIGHT)
+	  .attr('style', 'outline: 1px solid black;')
+
+    plotQuadrantButtons(quadrants, header)
 
     _.each(quadrants, function (quadrant) {
       var quadrantGroup = plotQuadrant(rings, quadrant)
