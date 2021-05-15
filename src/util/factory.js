@@ -42,15 +42,21 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
     ringMap[ringName] = new Ring(ringName, i)
   })
 
+  var tags = {}
   var quadrants = {}
   _.each(blips, function (blip) {
     if (!quadrants[blip.quadrant]) {
       quadrants[blip.quadrant] = new Quadrant(_.capitalize(blip.quadrant))
     }
     quadrants[blip.quadrant].add(new Blip(blip.name, ringMap[blip.ring], blip.status.toLowerCase(), blip.topic, blip.description, blip.tags))
+	_.each(blip.tags, function (tag) {
+		if (!tags[tag]) tags[tag] = tag
+	})
   })
 
   var radar = new Radar()
+  radar.setTags(tags)
+  
   _.each(quadrants, function (quadrant) {
     radar.addQuadrant(quadrant)
   })

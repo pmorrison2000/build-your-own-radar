@@ -8,10 +8,11 @@ const _ = {
 }
 
 const Radar = function () {
-  var self, quadrants, blipNumber, addingQuadrant, alternatives, currentSheetName
+  var self, quadrants, blipNumber, addingQuadrant, alternatives, currentSheetName, tags
 
   blipNumber = 0
   addingQuadrant = 0
+  tags = {}
   quadrants = [
     { order: 'first', startAngle: 95 }
 //    { order: 'second', startAngle: 0 },
@@ -51,6 +52,10 @@ const Radar = function () {
     quadrants[addingQuadrant].quadrant = quadrant
     setNumbers(quadrant.blips())
     addingQuadrant++
+  }
+  
+  self.setTags = function(inputTags) {
+	  tags = inputTags
   }
 
   function allQuadrants () {
