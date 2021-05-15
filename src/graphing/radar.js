@@ -286,10 +286,6 @@ const Radar = function (size, radar) {
       .attr('class', 'blip-list-item')
       .attr('id', 'blip-list-item-' + blip.number())
       .text(blipText)
-      .append('div')
-      .attr('class', 'blip-list-theme')
-      .attr('id', 'blip-list-theme-' + blip.number())
-      .text(blip.topic())
     console.log('BlipText: ' + blipText)
 	
     var blipItemDescription = blipListItem.append('div')
@@ -298,6 +294,10 @@ const Radar = function (size, radar) {
     if (blip.description()) {
       blipItemDescription.append('p').html(blip.description())
     }
+    blipItemDescription.append('div')
+      .attr('class', 'blip-list-theme')
+      .attr('id', 'blip-list-theme-' + blip.number())
+      .text(blip.topic())
 
     var mouseOver = function () {
       d3.selectAll('g.blip-link').attr('opacity', 0.3)
