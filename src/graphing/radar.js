@@ -220,6 +220,7 @@ const Radar = function (size, radar) {
   }
 
   // lifted straight outta StackOverflow, https://stackoverflow.com/questions/24784302/wrapping-text-in-d3?lq=1
+  // text-shadow added
   function wrap(text, width) {
     text.each(function () {
         var text = d3.select(this),
@@ -235,7 +236,8 @@ const Radar = function (size, radar) {
                         .append("tspan")
                         .attr("x", x)
                         .attr("y", y)
-                        .attr("dy", dy + "em");
+                        .attr("dy", dy + "em")
+					    .attr('style', 'text-shadow: 0px 0px 2px black;');
         while (word = words.pop()) {
             line.push(word);
             tspan.text(line.join(" "));
@@ -247,6 +249,7 @@ const Radar = function (size, radar) {
                             .attr("x", x)
                             .attr("y", y)
                             .attr("dy", ++lineNumber * lineHeight + dy + "em")
+							.attr('style', 'text-shadow: 0px 0px 2px black;')
                             .text(word);
             }
         }
@@ -268,14 +271,6 @@ const Radar = function (size, radar) {
       .attr('class', 'blip-number-' + blip.status())
       .attr('text-anchor', 'middle')
       .text(blip.number())
-
-    group.append('text')
-      .attr('x', x + 5 + blip.width / 2)
-      .attr('y', y + 5)
-      .attr('class', 'blip-text-shadow')
-      .attr('text-anchor', 'left')
-      .text(blip.name())
-	  .call(wrap, xMaxLen - 5 - blip.width)
 
     group.append('text')
       .attr('x', x + 4 + blip.width / 2)
