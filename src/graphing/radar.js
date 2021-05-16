@@ -490,7 +490,7 @@ const Radar = function (size, radar) {
 	  
     tagDiv.append('h3').text('Tags')
 	var tagList = tagDiv.append('ul')
-	
+	tags.sort()
 	_.each(tags, function (tag) {
 	  var itag = internalTag(tag)
       var tagListItem = tagList.append('li')
