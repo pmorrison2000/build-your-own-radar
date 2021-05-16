@@ -50,7 +50,7 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
     }
     quadrants[blip.quadrant].add(new Blip(blip.name, ringMap[blip.ring], blip.status.toLowerCase(), blip.topic, blip.description, blip.tags))
 	_.each(blip.tags, function (tag) {
-		if (!tags.includes(tag)) tags.push(tag)
+		if(blip.status != 'gap' && !tags.includes(tag)) tags.push(tag)
 	})
   })
 

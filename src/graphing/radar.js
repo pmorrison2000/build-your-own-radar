@@ -208,7 +208,7 @@ const Radar = function (size, radar) {
 		  blipNumberInRing++)
 
         allBlipCoordinatesInRing.push(coordinates)
-        drawBlipInCoordinates(blip, coordinates, order, quadrantGroup, ringList)
+		if(blip.status() != 'gap') drawBlipInCoordinates(blip, coordinates, order, quadrantGroup, ringList)
       })
     })
   }

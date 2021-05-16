@@ -51,6 +51,7 @@ const InputSanitizer = function () {
 		  case 'new':
 		  case 'strike':
 		  case 'moved':
+		  case 'gap':
 			result.push(processedBlip)
 			break
 		  case 'hide':
