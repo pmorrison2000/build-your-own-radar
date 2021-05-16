@@ -138,8 +138,7 @@ body {
     width: 100%;
     margin: 0 auto;
     position: relative;
-	display: inline-block;
-	white-space: nowrap;
+	display: -webkit-box;
 
     svg#radar-plot {
       margin-left: 10px;
@@ -292,9 +291,9 @@ body {
       &.selected {
 		overflow: auto;
         max-height: 100%;
-        max-width: 40%;
+        max-width: 350px;
 		padding-left: 10px;
-		white-space: normal;
+		border: 1px solid #aaa;
       }
 
       ul {
@@ -359,9 +358,9 @@ body {
     div.tag-table {
 	  overflow: auto;
       max-height: 100%;
-      max-width: 40%;
+      max-width: 350px;
       padding-left: 10px;
-	  white-space: normal;
+	  border: 1px solid #aaa;
 
       h3 {
         text-transform: uppercase;
