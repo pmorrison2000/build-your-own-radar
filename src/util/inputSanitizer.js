@@ -38,7 +38,7 @@ const InputSanitizer = function () {
     blip.status = sanitizeHtml(blip.Status, restrictedOptions)
     blip.ring = sanitizeHtml(blip.Horizon, restrictedOptions)
     blip.topic = sanitizeHtml(blip.Theme, restrictedOptions)
-	blip.tags = blip.Tags.split('|').map(function(tag){return tag.trim();})
+	blip.tags = blip.Tags.split(';').map(function(tag){return tag.trim();})
 
     return blip
   }
@@ -84,7 +84,7 @@ const InputSanitizer = function () {
     blip.status = sanitizeHtml(status, restrictedOptions)
     blip.ring = sanitizeHtml(ring, restrictedOptions)
     blip.topic = sanitizeHtml(topic, restrictedOptions)
-    blip.tags = tags.split('|').map(function(tag){return tag.trim();})
+    blip.tags = tags.split(';').map(function(tag){return tag.trim();})
 
     return blip
   }
