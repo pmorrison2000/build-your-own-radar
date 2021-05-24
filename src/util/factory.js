@@ -25,7 +25,7 @@ const Sheet = require('./sheet')
 const ExceptionMessages = require('./exceptionMessages')
 const GoogleAuth = require('./googleAuth')
 
-const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
+const plotRadar = function (title, blips, currentRadarName, alternativeRadars, queryParams) {
   if (title.endsWith('.csv')) {
     title = title.substring(0, title.length - 4)
   }
@@ -56,6 +56,7 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
 
   var radar = new Radar()
   radar.setTags(tags)
+  radar.setQueryParams(queryParams)
   
   _.each(quadrants, function (quadrant) {
     radar.addQuadrant(quadrant)
@@ -76,8 +77,10 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
   new GraphingRadar(size, radar).init().plot()
 }
 
-const GoogleSheet = function (sheetReference, sheetName) {
+const GoogleSheet = function (queryParams) {
   var self = {}
+  var sheetReference = queryParams.sheetId
+  var sheetName = queryParams.sheetName
 
   self.build = function () {
     var sheet = new Sheet(sheetReference)
@@ -112,7 +115,7 @@ const GoogleSheet = function (sheetReference, sheetName) {
         var all = tabletop.sheets(sheetName).all()
         var blips = _.map(all, new InputSanitizer().sanitize)
 
-        plotRadar(tabletop.googleSheetName + ' - ' + sheetName, blips, sheetName, tabletop.foundSheetNames)
+        plotRadar(tabletop.googleSheetName + ' - ' + sheetName, blips, sheetName, tabletop.foundSheetNames, queryParams)
       } catch (exception) {
         plotErrorMessage(exception)
       }
@@ -132,7 +135,7 @@ const GoogleSheet = function (sheetReference, sheetName) {
     const all = values
     const header = all.shift()
     var blips = _.map(all, blip => new InputSanitizer().sanitizeForProtectedSheet(blip, header))
-    plotRadar(documentTitle + ' - ' + sheetName, blips, sheetName, sheetNames)
+    plotRadar(documentTitle + ' - ' + sheetName, blips, sheetName, sheetNames, queryParams)
   }
 
   self.authenticate = function (force = false, callback) {
@@ -159,7 +162,7 @@ const GoogleSheet = function (sheetReference, sheetName) {
   return self
 }
 
-const CSVDocument = function (url) {
+const CSVDocument = function (url, queryParams) {
   var self = {}
 
   self.build = function () {
@@ -177,7 +180,7 @@ const CSVDocument = function (url) {
       var blips = _.reduce(data, new InputSanitizer().reducer, [])
 	  //console.log('Blips:')
 	  //console.log(blips)
-      plotRadar(FileName(url), blips, 'CSV File', [])
+      plotRadar(FileName(url), blips, 'CSV File', [], queryParams)
     } catch (exception) {
       plotErrorMessage(exception)
     }
@@ -217,10 +220,10 @@ const GoogleSheetInput = function () {
     var queryParams = queryString ? QueryParams(queryString[0]) : {}
 
     if (domainName && queryParams.sheetId.endsWith('csv')) {
-      sheet = CSVDocument(queryParams.sheetId)
+      sheet = CSVDocument(queryParams.sheetId, queryParams)
       sheet.init().build()
     } else if (domainName && domainName.endsWith('google.com') && queryParams.sheetId) {
-      sheet = GoogleSheet(queryParams.sheetId, queryParams.sheetName)
+      sheet = GoogleSheet(queryParams)
       console.log(queryParams.sheetName)
 
       sheet.init().build()
@@ -301,6 +304,12 @@ function plotForm (content) {
     .attr('type', 'text')
     .attr('name', 'sheetId')
     .attr('placeholder', 'e.g. https://docs.google.com/spreadsheets/d/<sheetid> or hosted CSV file')
+    .attr('required', '')
+
+  form.append('input')
+    .attr('type', 'text')
+    .attr('name', 'fontSize')
+    .attr('placeholder', 'e.g. 9pt')
     .attr('required', '')
 
   form.append('button')
@@ -395,7 +404,7 @@ function plotUnauthorizedErrorMessage () {
   button.on('click', _ => {
     var queryString = window.location.href.match(/sheetId(.*)/)
     var queryParams = queryString ? QueryParams(queryString[0]) : {}
-    const sheet = GoogleSheet(queryParams.sheetId, queryParams.sheetName)
+    const sheet = GoogleSheet(queryParams)
     sheet.authenticate(true, _ => {
       content.remove()
     })

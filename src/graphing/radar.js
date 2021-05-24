@@ -276,6 +276,7 @@ const Radar = function (size, radar) {
       .attr('x', x + 4 + blip.width / 2)
       .attr('y', y + 4)
       .attr('class', 'blip-text-' + blip.status())
+	  .attr('style','font-size: ' + radar.queryParams('fontSize') + ';')
       .attr('text-anchor', 'left')
       .text(blip.name())
 	  .call(wrap, xMaxLen - 5 - blip.width)

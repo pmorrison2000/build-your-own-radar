@@ -8,11 +8,12 @@ const _ = {
 }
 
 const Radar = function () {
-  var self, quadrants, blipNumber, addingQuadrant, alternatives, currentSheetName, tags
+  var self, quadrants, blipNumber, addingQuadrant, alternatives, currentSheetName, tags, queryParams
 
   blipNumber = 0
   addingQuadrant = 0
   tags = []
+  queryParams = {}
   quadrants = [
     { order: 'first', startAngle: 95 }
 //    { order: 'second', startAngle: 0 },
@@ -60,6 +61,14 @@ const Radar = function () {
   
   self.setTags = function(inputTags) {
 	  tags = inputTags
+  }
+  
+  self.setQueryParams = function(qp) {
+	  queryParams = qp
+  }
+  
+  self.queryParams = function(key) {
+	  return queryParams[key]
   }
 
   function allQuadrants () {
