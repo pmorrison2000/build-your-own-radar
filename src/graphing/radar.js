@@ -729,7 +729,6 @@ const Radar = function (size, radar) {
     svg.attr('id', 'radar-plot')
 	  .attr('width', size)
 	  .attr('height', size + BLIP_HEIGHT)
-	  .attr('style', 'outline: 1px solid black;')
 
     plotQuadrantButtons(quadrants, header)
 
