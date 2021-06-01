@@ -726,9 +726,76 @@ select {
               color: white;
               background-color: rgba(0, 0, 0, 0.8);
             }
-		  }
+    		  }
         }
       }
+
+      .tag-container {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        cursor: pointer;
+        font-size: $baseFont;
+        font-weight: 400;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      
+      /* Hide the browser's default checkbox */
+      .tag-container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+      
+      /* Create a custom checkbox */
+      .tag-checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+      }
+      
+      /* On mouse-over, add a grey background color */
+      .tag-container:hover input ~ .tag-checkmark {
+        background-color: #ccc;
+      }
+      
+      /* When the checkbox is checked, add a blue background */
+      .tag-container input:checked ~ .tag-checkmark {
+        background-color: #2196F3;
+      }
+      
+      /* Create the checkmark/indicator (hidden when not checked) */
+      .tag-checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+      
+      /* Show the checkmark when checked */
+      .tag-container input:checked ~ .tag-checkmark:after {
+        display: block;
+      }
+      
+      /* Style the checkmark/indicator */
+      .tag-container .tag-checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }      
     }	
   }
 }
