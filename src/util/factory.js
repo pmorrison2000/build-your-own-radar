@@ -235,7 +235,7 @@ const GoogleSheetInput = function () {
 
       plotLogo(content)
 
-      var bannerText = '<div><h1>Build your own Horizon Chart</h1></div>'
+      var bannerText = '<div><h1>Build your own Frontier Chart</h1></div>'
 
       plotBanner(content, bannerText)
 
@@ -249,7 +249,7 @@ const GoogleSheetInput = function () {
 }
 
 function setDocumentTitle () {
-  document.title = 'Build your own Horizon Chart'
+  document.title = 'Build your own Frontier Chart'
 }
 
 function plotLoading (content) {
@@ -316,7 +316,7 @@ function plotForm (content) {
     .attr('type', 'submit')
     .append('a')
     .attr('class', 'button')
-    .text('Build Horizon Chart')
+    .text('Build Chart')
 
   form.append('p').html("<a href='https://www.thoughtworks.com/radar/how-to-byor'>Need help?</a>")
 }
