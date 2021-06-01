@@ -31,14 +31,14 @@ const InputSanitizer = function () {
   var self = {}
   self.sanitize = function (rawBlip) {
     var blip = trimWhiteSpaces(rawBlip)
-	//console.log('Rawblip after trimming:')
-	//console.log(blip)
+  	//console.log('Rawblip after trimming:')
+  	//console.log(blip)
     blip.description = sanitizeHtml(blip.Description, relaxedOptions)
     blip.name = sanitizeHtml(blip.Technology, relaxedOptions)
     blip.status = sanitizeHtml(blip.Status, restrictedOptions)
-    blip.ring = sanitizeHtml(blip.Horizon, restrictedOptions)
+    blip.ring = sanitizeHtml(blip.Ring, restrictedOptions)
     blip.topic = sanitizeHtml(blip.Theme, restrictedOptions)
-	blip.tags = blip.Tags.split(';').map(function(tag){return tag.trim();})
+  	blip.tags = blip.Tags.split(';').map(function(tag){return tag.trim();})
 
     return blip
   }
@@ -68,16 +68,16 @@ const InputSanitizer = function () {
     const descriptionIndex = header.indexOf('Description')
     const nameIndex = header.indexOf('Technology')
     const statusIndex = header.indexOf('Status')
-    const ringIndex = header.indexOf('Horizon')
+    const ringIndex = header.indexOf('Ring')
     const topicIndex = header.indexOf('Theme')
-	const tagsIndex = header.indexOf('Tags')
+  	const tagsIndex = header.indexOf('Tags')
 
     const description = descriptionIndex === -1 ? '' : blip[descriptionIndex]
     const name = nameIndex === -1 ? '' : blip[nameIndex]
     const status = statusIndex === -1 ? '' : blip[statusIndex]
     const ring = ringIndex === -1 ? '' : blip[ringIndex]
     const topic = topicIndex === -1 ? '' : blip[topicIndex]
-	const tags = tagsIndex === -1 ? '' : blip[tagsIndex]
+	  const tags = tagsIndex === -1 ? '' : blip[tagsIndex]
 
     blip.description = sanitizeHtml(description, relaxedOptions)
     blip.name = sanitizeHtml(name, relaxedOptions)
