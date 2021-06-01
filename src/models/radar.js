@@ -26,7 +26,7 @@ const Radar = function () {
 
   function setNumbers (blips) {
     blips.forEach(function (blip) {
-      blip.setNumber(++blipNumber)
+      if(blip.status() != 'gap') blip.setNumber(++blipNumber)
     })
   }
 
