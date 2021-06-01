@@ -67,12 +67,12 @@ const Radar = function (size, radar) {
 	  theta = SLICE
 	  y = radius * Math.cos(toRadian(theta))
 	  x = radius * Math.sin(toRadian(theta))
-      quadrantGroup.append('text')
-        .attr('class', 'line-text')
-        .attr('y', centerY() + 30 - y)
-        .attr('x', centerX() + x - 30)
-        .attr('text-anchor', 'middle')
-        .text(ring.name())
+    quadrantGroup.append('text')
+      .attr('class', 'line-text')
+      .attr('y', centerY() + 30 - y)
+      .attr('x', centerX() + x - 30)
+      .attr('text-anchor', 'middle')
+      .text(ring.name())
     })
   }
 
@@ -93,33 +93,33 @@ const Radar = function (size, radar) {
   }
 
   function circlePath() {
-	// a squashed circle
-	return 'M 422 285 c -24 0 -24 30 0 30 c 24 0 24 -30 0 -30'
-	//'M420.084,282.092c-1.073,0-2.16,0.103-3.243,0.313c-6.912,1.345-13.188,8.587-11.423,16.874c1.732,8.141,8.632,13.711,17.806,13.711c0.025,0,0.052,0,0.074-0.003c0.551-0.025,1.395-0.011,2.225-0.109c4.404-0.534,8.148-2.218,10.069-6.487c1.747-3.886,2.114-7.993,0.913-12.118C434.379,286.944,427.494,282.092,420.084,282.092'
+    // a squashed circle
+    return 'M 422 285 c -24 0 -24 30 0 30 c 24 0 24 -30 0 -30'
+    //'M420.084,282.092c-1.073,0-2.16,0.103-3.243,0.313c-6.912,1.345-13.188,8.587-11.423,16.874c1.732,8.141,8.632,13.711,17.806,13.711c0.025,0,0.052,0,0.074-0.003c0.551-0.025,1.395-0.011,2.225-0.109c4.404-0.534,8.148-2.218,10.069-6.487c1.747-3.886,2.114-7.993,0.913-12.118C434.379,286.944,427.494,282.092,420.084,282.092'
   }
 
   function circle (blip, x, y, order, group) {
     return (group || svg).append('path')
       .attr('d', circlePath())
-	  .attr('transform', 'scale(' + (blip.width / 34) + ') translate(' + (-404 + x * (34 / blip.width) - 17) + ', ' + (-282 + y * (34 / blip.width) - 17) + ')')
+  	  .attr('transform', 'scale(' + (blip.width / 34) + ') translate(' + (-404 + x * (34 / blip.width) - 17) + ', ' + (-282 + y * (34 / blip.width) - 17) + ')')
       .attr('class', order)
   }
 
   function circleLegend (x, y, group) {
     return (group || svg).append('path')
       .attr('d', circlePath())
-	  .attr('transform', 'scale(' + (22 / 64) + ') translate(' + (-404 + x * (64 / 22) - 17) + ', ' + (-282 + y * (64 / 22) - 17) + ')')
+	    .attr('transform', 'scale(' + (22 / 64) + ') translate(' + (-404 + x * (64 / 22) - 17) + ', ' + (-282 + y * (64 / 22) - 17) + ')')
   }
   
   function square(blip, x, y, order, status, group) {
     return (group || svg).append('rect')
-	.attr('x', x - HALF_BLIP_HEIGHT)
-	.attr('y', y - HALF_BLIP_HEIGHT)
-	.attr('width', BLIP_HEIGHT)
-	.attr('height', BLIP_HEIGHT)
-	.attr('stroke', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
-	.attr('fill', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
-    .attr('class', 'blip-icon-' + status) // TODO: move the stroke and fill colours to classes based on status
+      .attr('x', x - HALF_BLIP_HEIGHT)
+      .attr('y', y - HALF_BLIP_HEIGHT)
+      .attr('width', BLIP_HEIGHT)
+      .attr('height', BLIP_HEIGHT)
+      .attr('stroke', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
+      .attr('fill', blip.status()=='ok' ? 'green' : (blip.status()=='new' ? 'red' : (blip.status()=='moved' ? 'yellow' : 'darkgrey')))
+      .attr('class', 'blip-icon-' + status) // TODO: move the stroke and fill colours to classes based on status
   }
 
   function addRing (ring, order) {
@@ -130,22 +130,22 @@ const Radar = function (size, radar) {
 
   function calculateBlipCoordinates (blip, chance, minRadius, maxRadius, startAngle, blipTotal, blipIndex) {
     var gap = maxRadius - minRadius
-	var margin = 1/8 * gap
-	if(minRadius == 0) margin = 1/10 * gap // smaller margin for ring zero (there is less space)
-	var standOff = minRadius + margin
+    var margin = 1/8 * gap
+    if(minRadius == 0) margin = 1/10 * gap // smaller margin for ring zero (there is less space)
+    var standOff = minRadius + margin
 
-	// our quadrant is cut off at the top by the viewbox because centerY is not zero, so we cap topmostY here with a small margin for the font size/blip size
+  	// our quadrant is cut off at the top by the viewbox because centerY is not zero, so we cap topmostY here with a small margin for the font size/blip size
     var topmostY = Math.min(centerY() - BLIP_HEIGHT, minRadius + 7/8 * gap) // no cos adjustment, we assume vertical axis, ie 0 angle
-	var bottommostY = HALF_BLIP_HEIGHT // for larger slices than 90 degrees we waste space at the bottom, but meh
+	  var bottommostY = HALF_BLIP_HEIGHT // for larger slices than 90 degrees we waste space at the bottom, but meh
 
     var yGap = (topmostY - bottommostY) / (blipTotal - 1) 
-	var ySpaced = topmostY - (blipIndex * yGap) // evenly spaced y coordinates
-	xMargin = margin
-	if(ySpaced < standOff) xMargin = Math.sqrt(standOff * standOff - ySpaced * ySpaced) // our left margin is xMargin or the chord length of inner radius (standOff)
-	if(xMargin < margin) xMargin = margin // tweak to fix a wobble in the inner ring
+    var ySpaced = topmostY - (blipIndex * yGap) // evenly spaced y coordinates
+    xMargin = margin
+    if(ySpaced < standOff) xMargin = Math.sqrt(standOff * standOff - ySpaced * ySpaced) // our left margin is xMargin or the chord length of inner radius (standOff)
+    if(xMargin < margin) xMargin = margin // tweak to fix a wobble in the inner ring
 
     xMax = Math.sqrt(maxRadius * maxRadius - ySpaced * ySpaced) // the outermost x coordinate for this ring at height ySpaced
-	console.log(blipIndex + '/' + blipTotal + ' (' + blip.number() + '): ySpaced = %d, xMargin = %d, xMax = %d', ySpaced, xMargin, xMax)
+  	console.log(blipIndex + '/' + blipTotal + ' (' + blip.number() + '): ySpaced = %d, xMargin = %d, xMax = %d', ySpaced, xMargin, xMax)
 	
     var x = centerX() + xMargin
     var y = centerY() - ySpaced
@@ -196,7 +196,7 @@ const Radar = function (size, radar) {
 
       var ringList = addRing(ring.name(), order)
       var allBlipCoordinatesInRing = []
-	  var blipNumberInRing = 0
+  	  var blipNumberInRing = 0
 	  
       ringBlips.forEach(function (blip) {
         const coordinates = findBlipCoordinates(blip,
@@ -204,66 +204,65 @@ const Radar = function (size, radar) {
           maxRadius,
           startAngle,
           allBlipCoordinatesInRing,
-		  ringBlips.length,
-		  blipNumberInRing++)
+	  	    ringBlips.length,
+		      blipNumberInRing++)
 
         allBlipCoordinatesInRing.push(coordinates)
-		if(blip.status() != 'gap') drawBlipInCoordinates(blip, coordinates, order, quadrantGroup, ringList)
+    		if(blip.status() != 'gap') drawBlipInCoordinates(blip, coordinates, order, quadrantGroup, ringList)
       })
     })
   }
 
   function findBlipCoordinates (blip, minRadius, maxRadius, startAngle, allBlipCoordinatesInRing, blipTotal, blipIndex) {
     var coordinates = calculateBlipCoordinates(blip, chance, minRadius, maxRadius, startAngle, blipTotal, blipIndex)
-
-	return coordinates
+  	return coordinates
   }
 
   // lifted straight outta StackOverflow, https://stackoverflow.com/questions/24784302/wrapping-text-in-d3?lq=1
   // text-shadow added
   function wrap(text, width) {
     text.each(function () {
-        var text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, // ems
-            x = text.attr("x"),
-            y = text.attr("y"),
-            dy = 0, //parseFloat(text.attr("dy")),
-            tspan = text.text(null)
-                        .append("tspan")
-                        .attr("x", x)
-                        .attr("y", y)
-                        .attr("dy", dy + "em")
-					    .attr('style', 'text-shadow: 0px 0px 2px black;')
-        while (word = words.pop()) {
-            line.push(word)
-            tspan.text(line.join(" "))
-            if (tspan.node().getComputedTextLength() > width) {
-                line.pop()
-                tspan.text(line.join(" "))
-                line = [word]
-                tspan = text.append("tspan")
-                            .attr("x", x)
-                            .attr("y", y)
-                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
-							.attr('style', 'text-shadow: 0px 0px 2px black;')
-                            .text(word)
-            }
+      var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          x = text.attr("x"),
+          y = text.attr("y"),
+          dy = 0, //parseFloat(text.attr("dy")),
+          tspan = text.text(null)
+                      .append("tspan")
+                      .attr("x", x)
+                      .attr("y", y)
+                      .attr("dy", dy + "em")
+                      .attr('style', 'text-shadow: 0px 0px 2px black;')
+      while (word = words.pop()) {
+        line.push(word)
+        tspan.text(line.join(" "))
+        if (tspan.node().getComputedTextLength() > width) {
+          line.pop()
+          tspan.text(line.join(" "))
+          line = [word]
+          tspan = text.append("tspan")
+                      .attr("x", x)
+                      .attr("y", y)
+                      .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                      .attr('style', 'text-shadow: 0px 0px 2px black;')
+                      .text(word)
         }
+      }
     })
   }
 
   function drawBlipInCoordinates (blip, coordinates, order, quadrantGroup, ringList) {
     var x = coordinates[0]
     var y = coordinates[1]
-	var xMaxLen = coordinates[2]
+  	var xMaxLen = coordinates[2]
 
     var group = quadrantGroup.append('g').attr('class', 'blip-link').attr('id', 'blip-link-' + blip.number())
 
-	square(blip, x, y, order, blip.status(), group)
+	  square(blip, x, y, order, blip.status(), group)
 
     group.append('text')
       .attr('x', x)
@@ -276,10 +275,10 @@ const Radar = function (size, radar) {
       .attr('x', x + 4 + blip.width / 2)
       .attr('y', y + 4)
       .attr('class', 'blip-text-' + blip.status())
-	  .attr('style','font-size: ' + radar.queryParams('fontSize') + ';')
+	    .attr('style','font-size: ' + radar.queryParams('fontSize') + ';')
       .attr('text-anchor', 'left')
       .text(blip.name())
-	  .call(wrap, xMaxLen - 5 - blip.width)
+	    .call(wrap, xMaxLen - 5 - blip.width)
 
     var blipListItem = ringList.append('li')
     var blipText = blip.number() + '. ' + blip.name() + '. '
@@ -292,6 +291,7 @@ const Radar = function (size, radar) {
     var blipItemDescription = blipListItem.append('div')
       .attr('id', 'blip-description-' + blip.number())
       .attr('class', 'blip-item-description')
+
     if (blip.description()) {
       blipItemDescription.append('p').html(blip.description())
     }
@@ -557,9 +557,9 @@ const Radar = function (size, radar) {
         .text(tag)
         
       var tagCheck = tagLabel.append('input')
-      .attr('type', 'checkbox')
-      .attr('class', 'tag-checkmark1')
-      .attr('id', itag)
+        .attr('type', 'checkbox')
+        .attr('class', 'tag-checkmark1')
+        .attr('id', itag)
 
       tagLabel.append('span')
         .attr('class', 'tag-checkmark')
