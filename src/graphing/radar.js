@@ -237,24 +237,24 @@ const Radar = function (size, radar) {
                         .attr("x", x)
                         .attr("y", y)
                         .attr("dy", dy + "em")
-					    .attr('style', 'text-shadow: 0px 0px 2px black;');
+					    .attr('style', 'text-shadow: 0px 0px 2px black;')
         while (word = words.pop()) {
-            line.push(word);
-            tspan.text(line.join(" "));
+            line.push(word)
+            tspan.text(line.join(" "))
             if (tspan.node().getComputedTextLength() > width) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
+                line.pop()
+                tspan.text(line.join(" "))
+                line = [word]
                 tspan = text.append("tspan")
                             .attr("x", x)
                             .attr("y", y)
                             .attr("dy", ++lineNumber * lineHeight + dy + "em")
 							.attr('style', 'text-shadow: 0px 0px 2px black;')
-                            .text(word);
+                            .text(word)
             }
         }
-    });
-  }  
+    })
+  }
 
   function drawBlipInCoordinates (blip, coordinates, order, quadrantGroup, ringList) {
     var x = coordinates[0]
@@ -300,10 +300,10 @@ const Radar = function (size, radar) {
       .attr('id', 'blip-list-theme-' + blip.number())
       .text(blip.topic())
 
-	blip.tags().forEach(function(tag) {
-		var cls = internalTag(tag)
-		group.classed(cls, true)
-	})
+    blip.tags().forEach(function(tag) {
+      var cls = internalTag(tag)
+      group.classed(cls, true)
+    })
 
     var mouseOver = function () {
       d3.selectAll('g.blip-link').attr('opacity', 0.3)
@@ -477,23 +477,23 @@ const Radar = function (size, radar) {
       .classed('search-radar', true)
 
     AutoComplete('#auto-complete', quadrants, searchBlip)
-	d3.selectAll('.quadrant-table.' + quadrants[0].order).classed('selected', true)
+    d3.selectAll('.quadrant-table.' + quadrants[0].order).classed('selected', true)
   }
 
   function internalTag(tag) {
 	  return 'tag-list-item-' + encodeURIComponent(tag.replace(/ /g,'', true)).replace(/%/g,'')
   }
   
-  function plotTags (tags) {
+  function plotTags2 (tags) {
     var tagDiv = radarElement
       .append('div')
       .attr('class', 'tag-table')
 	  
     tagDiv.append('h3').text('Tags')
-	var tagList = tagDiv.append('ul')
-	tags.sort()
-	_.each(tags, function (tag) {
-	  var itag = internalTag(tag)
+    var tagList = tagDiv.append('ul')
+    tags.sort()
+    _.each(tags, function (tag) {
+      var itag = internalTag(tag)
       var tagListItem = tagList.append('li')
       tagListItem.append('div')
         .attr('class', 'tag-list-item')
@@ -502,7 +502,7 @@ const Radar = function (size, radar) {
 
       var mouseOver = function () {
         d3.selectAll('g.blip-link').attr('opacity', 0.1)
-		d3.selectAll('g.' + itag).attr('opacity', 1.0)
+        d3.selectAll('g.' + itag).attr('opacity', 1.0)
         tagListItem.selectAll('.tag-list-item').classed('highlight', true)
       }
 
@@ -587,7 +587,7 @@ const Radar = function (size, radar) {
     }
 
     radarElement.style('height', size + BLIP_HEIGHT + 'px')
-	dd = radarElement.append('div').attr('class','svgdiv').attr('style','float:left')
+    dd = radarElement.append('div').attr('class','svgdiv').attr('style','float:left')
     svg = dd.append('svg').call(tip)
     svg.attr('id', 'radar-plot')
 	  .attr('width', size)
