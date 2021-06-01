@@ -49,9 +49,9 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars, q
       quadrants[blip.quadrant] = new Quadrant(_.capitalize(blip.quadrant))
     }
     quadrants[blip.quadrant].add(new Blip(blip.name, ringMap[blip.ring], blip.status.toLowerCase(), blip.topic, blip.description, blip.tags))
-	_.each(blip.tags, function (tag) {
-		if(blip.status != 'gap' && !tags.includes(tag)) tags.push(tag)
-	})
+  	_.each(blip.tags, function (tag) {
+  		if(blip.status != 'gap' && !tags.includes(tag)) tags.push(tag)
+  	})
   })
 
   var radar = new Radar()
@@ -178,8 +178,8 @@ const CSVDocument = function (url, queryParams) {
       contentValidator.verifyHeaders()
       //var blips = _.map(data, new InputSanitizer().sanitize)
       var blips = _.reduce(data, new InputSanitizer().reducer, [])
-	  //console.log('Blips:')
-	  //console.log(blips)
+      //console.log('Blips:')
+      //console.log(blips)
       plotRadar(FileName(url), blips, 'CSV File', [], queryParams)
     } catch (exception) {
       plotErrorMessage(exception)
@@ -309,6 +309,7 @@ function plotForm (content) {
   form.append('input')
     .attr('type', 'text')
     .attr('name', 'fontSize')
+    .attr('value', '9pt')
     .attr('placeholder', 'e.g. 9pt')
     .attr('required', '')
 
