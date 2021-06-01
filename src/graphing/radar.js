@@ -306,14 +306,49 @@ const Radar = function (size, radar) {
     })
 
     var mouseOver = function () {
+      // dim all the blips (set opacity to 0.3)
       d3.selectAll('g.blip-link').attr('opacity', 0.3)
+
+      // figure out what is checked
+      var choices = [];
+      d3.selectAll('.tag-checkmark1').each(function(d){
+        cb = d3.select(this);
+        if(cb.property('checked')){
+          choices.push(cb.property('id'));
+        }
+      });
+
+      // partly-undim those selected by checkboxes
+      if(choices.length > 0) {
+        d3.selectAll('g.blip-link').attr('opacity', 0.1)
+        _.each(choices, function(itag) { d3.selectAll('g.' + itag).attr('opacity', 0.3) })
+      }
+
+      // fully undim the mouseover blip
       group.attr('opacity', 1.0)
       blipListItem.selectAll('.blip-list-item').classed('highlight', true)
       tip.show(blip.name(), group.node())
     }
 
     var mouseOut = function () {
+      // undim all the blips (restore opacity to 1.0)
       d3.selectAll('g.blip-link').attr('opacity', 1.0)
+
+      // figure out what is checked
+      var choices = [];
+      d3.selectAll('.tag-checkmark1').each(function(d){
+        cb = d3.select(this);
+        if(cb.property('checked')){
+          choices.push(cb.property('id'));
+        }
+      });
+
+      // partly-undim those selected by checkboxes
+      if(choices.length > 0) {
+        d3.selectAll('g.blip-link').attr('opacity', 0.1)
+        _.each(choices, function(itag) { d3.selectAll('g.' + itag).attr('opacity', 1.0) })
+      }
+
       blipListItem.selectAll('.blip-list-item').classed('highlight', false)
       tip.hide().style('left', 0).style('top', 0)
     }
@@ -484,44 +519,36 @@ const Radar = function (size, radar) {
 	  return 'tag-list-item-' + encodeURIComponent(tag.replace(/ /g,'', true)).replace(/%/g,'')
   }
   
-  function plotTags2 (tags) {
-    var tagDiv = radarElement
-      .append('div')
-      .attr('class', 'tag-table')
-	  
-    tagDiv.append('h3').text('Tags')
-    var tagList = tagDiv.append('ul')
-    tags.sort()
-    _.each(tags, function (tag) {
-      var itag = internalTag(tag)
-      var tagListItem = tagList.append('li')
-      tagListItem.append('div')
-        .attr('class', 'tag-list-item')
-        .attr('id', itag)
-        .text(tag)
-
-      var mouseOver = function () {
-        d3.selectAll('g.blip-link').attr('opacity', 0.1)
-        d3.selectAll('g.' + itag).attr('opacity', 1.0)
-        tagListItem.selectAll('.tag-list-item').classed('highlight', true)
-      }
-
-      var mouseOut = function () {
-        d3.selectAll('g.blip-link').attr('opacity', 1.0)
-        tagListItem.selectAll('.tag-list-item').classed('highlight', false)
-      }
-
-      tagListItem.on('mouseover', mouseOver).on('mouseout', mouseOut)
-    })
-  }
-
   function plotTags (tags) {
     var tagDiv = radarElement
       .append('div')
       .attr('class', 'tag-table')
 	  
     tagDiv.append('h3').text('Tags')
-    var tagList = tagDiv //.append('ul')
+    tagDiv.append('p')
+
+    var tagList = tagDiv
+
+    var onclick = function() {
+      // undim all the blips (restore opacity to 1.0)
+      d3.selectAll('g.blip-link').attr('opacity', 1.0)
+
+      // figure out what is checked
+      var choices = [];
+      d3.selectAll('.tag-checkmark1').each(function(d){
+        cb = d3.select(this);
+        if(cb.property('checked')){
+          choices.push(cb.property('id'));
+        }
+      });
+    
+      // dim all the blips then undim those selected by checkboxes
+      if(choices.length > 0) {
+        d3.selectAll('g.blip-link').attr('opacity', 0.1)
+        _.each(choices, function(itag) { d3.selectAll('g.' + itag).attr('opacity', 1.0) })
+      } 
+    }
+
     tags.sort()
     _.each(tags, function (tag) {
       var itag = internalTag(tag)
@@ -530,25 +557,14 @@ const Radar = function (size, radar) {
         .text(tag)
         
       var tagCheck = tagLabel.append('input')
-        .attr('type', 'checkbox')
-        .attr('checked', null)
-        .attr('id', itag)
+      .attr('type', 'checkbox')
+      .attr('class', 'tag-checkmark1')
+      .attr('id', itag)
 
       tagLabel.append('span')
         .attr('class', 'tag-checkmark')
 
-      var mouseOver = function () {
-        d3.selectAll('g.blip-link').attr('opacity', 0.1)
-        d3.selectAll('g.' + itag).attr('opacity', 1.0)
-        tagLabel.selectAll('.tag-list-item').classed('highlight', true)
-      }
-
-      var mouseOut = function () {
-        d3.selectAll('g.blip-link').attr('opacity', 1.0)
-        tagLabel.selectAll('.tag-list-item').classed('highlight', false)
-      }
-
-      tagLabel.on('mouseover', mouseOver).on('mouseout', mouseOut)
+      tagLabel.on('click', onclick)
     })
   }
   
