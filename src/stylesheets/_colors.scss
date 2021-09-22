@@ -1,8 +1,13 @@
-$green: #86b782;
-$blue: #1ebccd;
-$orange: #f38a3e;
-$violet: #b32059;
-$pink: #ee0b77;
+$green: #007f00;  // bp green
+$blue: #009ee0;   // bp blue (cyan really)
+$orange: #ff9900; // bp yellow-orange
+$violet: #660099; // bp purple
+$pink: #ffe600;   // actually bp yellow
+
+$ring0: #2690b7;
+$ring1: #98907a;
+$ring2: #c3da9c;
+$ring3: #dce0d5;
 
 $grey-darkest: #bababa;
 $grey-dark: #cacaca;
@@ -11,8 +16,11 @@ $grey-light: #eee;
 $grey-lightest: #fafafa;
 $grey-even-darker: #d7d7d7;
 
-$white: #fff;
-$black: #000;
+$white: #ffffff;
+$black: #000000;
+$shadow: #444444;
+$red: #ff0000;
+$yellow: #ff9900;
 $grey-text: rgb(51, 51, 51);
 
 $grey-alpha-03: rgba(255, 255, 255, 0.3);

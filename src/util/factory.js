@@ -3,6 +3,8 @@
 const d3 = require('d3')
 const _ = {
   map: require('lodash/map'),
+  reduce: require('lodash/reduce'),
+  concat: require('lodash/concat'),
   uniqBy: require('lodash/uniqBy'),
   capitalize: require('lodash/capitalize'),
   each: require('lodash/each')
@@ -22,7 +24,7 @@ const Sheet = require('./sheet')
 const ExceptionMessages = require('./exceptionMessages')
 const GoogleAuth = require('./googleAuth')
 
-const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
+const plotRadar = function (title, blips, currentRadarName, alternativeRadars, queryParams) {
   if (title.endsWith('.csv')) {
     title = title.substring(0, title.length - 4)
   }
@@ -32,7 +34,6 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
   var rings = _.map(_.uniqBy(blips, 'ring'), 'ring')
   var ringMap = {}
   var maxRings = 4
-
   _.each(rings, function (ringName, i) {
     if (i === maxRings) {
       throw new MalformedDataError(ExceptionMessages.TOO_MANY_RINGS)
@@ -40,15 +41,22 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
     ringMap[ringName] = new Ring(ringName, i)
   })
 
+  var tags = []
   var quadrants = {}
   _.each(blips, function (blip) {
     if (!quadrants[blip.quadrant]) {
       quadrants[blip.quadrant] = new Quadrant(_.capitalize(blip.quadrant))
     }
-    quadrants[blip.quadrant].add(new Blip(blip.name, ringMap[blip.ring], blip.isNew.toLowerCase() === 'true', blip.topic, blip.description))
+    quadrants[blip.quadrant].add(new Blip(blip.name, ringMap[blip.ring], blip.status.toLowerCase(), blip.topic, blip.description, blip.tags))
+  	_.each(blip.tags, function (tag) {
+  		if(blip.status != 'gap' && !tags.includes(tag)) tags.push(tag)
+  	})
   })
 
   var radar = new Radar()
+  radar.setTags(tags)
+  radar.setQueryParams(queryParams)
+  
   _.each(quadrants, function (quadrant) {
     radar.addQuadrant(quadrant)
   })
@@ -63,13 +71,15 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
     radar.setCurrentSheet(currentRadarName)
   }
 
-  var size = (window.innerHeight - 133) < 620 ? 620 : window.innerHeight - 133
+  var size = (window.innerHeight - 133) < 1000 ? 1000 : window.innerHeight - 133
 
   new GraphingRadar(size, radar).init().plot()
 }
 
-const GoogleSheet = function (sheetReference, sheetName) {
+const GoogleSheet = function (queryParams) {
   var self = {}
+  var sheetReference = queryParams.sheetId
+  var sheetName = queryParams.sheetName
 
   self.build = function () {
     var sheet = new Sheet(sheetReference)
@@ -82,6 +92,26 @@ const GoogleSheet = function (sheetReference, sheetName) {
 
       self.authenticate(false, apiKeyEnabled)
     })
+
+    function createBlips (__, tabletop) {
+      try {
+        if (!sheetName) {
+          sheetName = tabletop.foundSheetNames[0]
+        }
+        var columnNames = tabletop.sheets(sheetName).columnNames
+
+        var contentValidator = new ContentValidator(columnNames)
+        contentValidator.verifyContent()
+        contentValidator.verifyHeaders()
+
+        var all = tabletop.sheets(sheetName).all()
+        var blips = _.map(all, new InputSanitizer().sanitize)
+
+        plotRadar(tabletop.googleSheetName + ' - ' + sheetName, blips, sheetName, tabletop.foundSheetNames, queryParams)
+      } catch (exception) {
+        plotErrorMessage(exception)
+      }
+    }
   }
 
   function createBlipsForProtectedSheet (documentTitle, values, sheetNames) {
@@ -97,7 +127,7 @@ const GoogleSheet = function (sheetReference, sheetName) {
     const all = values
     const header = all.shift()
     var blips = _.map(all, blip => new InputSanitizer().sanitizeForProtectedSheet(blip, header))
-    plotRadar(documentTitle + ' - ' + sheetName, blips, sheetName, sheetNames)
+    plotRadar(documentTitle + ' - ' + sheetName, blips, sheetName, sheetNames, queryParams)
   }
 
   self.authenticate = function (force = false, apiKeyEnabled, callback) {
@@ -138,7 +168,7 @@ const GoogleSheet = function (sheetReference, sheetName) {
   return self
 }
 
-const CSVDocument = function (url) {
+const CSVDocument = function (url, queryParams) {
   var self = {}
 
   self.build = function () {
@@ -152,8 +182,11 @@ const CSVDocument = function (url) {
       var contentValidator = new ContentValidator(columnNames)
       contentValidator.verifyContent()
       contentValidator.verifyHeaders()
-      var blips = _.map(data, new InputSanitizer().sanitize)
-      plotRadar(FileName(url), blips, 'CSV File', [])
+      //var blips = _.map(data, new InputSanitizer().sanitize)
+      var blips = _.reduce(data, new InputSanitizer().reducer, [])
+      //console.log('Blips:')
+      //console.log(blips)
+      plotRadar(FileName(url), blips, 'CSV File', [], queryParams)
     } catch (exception) {
       plotErrorMessage(exception)
     }
@@ -192,11 +225,11 @@ const GoogleSheetInput = function () {
     var queryString = window.location.href.match(/sheetId(.*)/)
     var queryParams = queryString ? QueryParams(queryString[0]) : {}
 
-    if (domainName && queryParams.sheetId.endsWith('.csv')) {
-      sheet = CSVDocument(queryParams.sheetId)
+    if (domainName && queryParams.sheetId.endsWith('csv')) {
+      sheet = CSVDocument(queryParams.sheetId, queryParams)
       sheet.init().build()
     } else if (domainName && domainName.endsWith('google.com') && queryParams.sheetId) {
-      sheet = GoogleSheet(queryParams.sheetId, queryParams.sheetName)
+      sheet = GoogleSheet(queryParams)
       console.log(queryParams.sheetName)
 
       sheet.init().build()
@@ -208,8 +241,7 @@ const GoogleSheetInput = function () {
 
       plotLogo(content)
 
-      var bannerText = '<div><h1>Build your own radar</h1><p>Once you\'ve <a href ="https://www.thoughtworks.com/radar/byor">created your Radar</a>, you can use this service' +
-        ' to generate an <br />interactive version of your Technology Radar. Not sure how? <a href ="https://www.thoughtworks.com/radar/how-to-byor">Read this first.</a></p></div>'
+      var bannerText = '<div><h1>Build your own Frontier Chart</h1></div>'
 
       plotBanner(content, bannerText)
 
@@ -223,7 +255,7 @@ const GoogleSheetInput = function () {
 }
 
 function setDocumentTitle () {
-  document.title = 'Build your own Radar'
+  document.title = 'Build your own Frontier Chart'
 }
 
 function plotLoading (content) {
@@ -237,7 +269,7 @@ function plotLoading (content) {
 
   plotLogo(content)
 
-  var bannerText = '<h1>Building your radar...</h1><p>Your Technology Radar will be available in just a few seconds</p>'
+  var bannerText = '<h1>Building ...</h1><p>...just a few seconds</p>'
   plotBanner(content, bannerText)
   plotFooter(content)
 }
@@ -255,10 +287,8 @@ function plotFooter (content) {
     .append('div')
     .attr('class', 'footer-content')
     .append('p')
-    .html('Powered by <a href="https://www.thoughtworks.com"> Thoughtworks</a>. ' +
-      'By using this service you agree to <a href="https://www.thoughtworks.com/radar/tos">Thoughtworks\' terms of use</a>. ' +
-      'You also agree to our <a href="https://www.thoughtworks.com/privacy-policy">privacy policy</a>, which describes how we will gather, use and protect any personal data contained in your public Google Sheet. ' +
-      'This software is <a href="https://github.com/thoughtworks/build-your-own-radar">open source</a> and available for download and self-hosting.')
+    .html('Radar code originally by <a href="https://www.thoughtworks.com"> Thoughtworks</a>, ' +
+      '<a href="https://github.com/thoughtworks/build-your-own-radar">Build Your Own Radar (github)</a> available for download and self-hosting.')
 }
 
 function plotBanner (content, text) {
@@ -282,11 +312,18 @@ function plotForm (content) {
     .attr('placeholder', 'e.g. https://docs.google.com/spreadsheets/d/<sheetid> or hosted CSV file')
     .attr('required', '')
 
+  form.append('input')
+    .attr('type', 'text')
+    .attr('name', 'fontSize')
+    .attr('value', '9pt')
+    .attr('placeholder', 'e.g. 9pt')
+    .attr('required', '')
+
   form.append('button')
     .attr('type', 'submit')
     .append('a')
     .attr('class', 'button')
-    .text('Build my radar')
+    .text('Build Chart')
 
   form.append('p').html("<a href='https://www.thoughtworks.com/radar/how-to-byor'>Need help?</a>")
 }
@@ -374,8 +411,8 @@ function plotUnauthorizedErrorMessage () {
   button.on('click', _ => {
     var queryString = window.location.href.match(/sheetId(.*)/)
     var queryParams = queryString ? QueryParams(queryString[0]) : {}
-    const sheet = GoogleSheet(queryParams.sheetId, queryParams.sheetName)
-    sheet.authenticate(true, false, _ => {
+    const sheet = GoogleSheet(queryParams)
+    sheet.authenticate(true, _ => {
       content.remove()
     })
   })

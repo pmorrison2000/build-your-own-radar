@@ -5,7 +5,7 @@ const _ = {
 
 const InputSanitizer = function () {
   var relaxedOptions = {
-    allowedTags: ['b', 'i', 'em', 'strong', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'ul',
+    allowedTags: ['b', 'i', 'em', 'strong', 'small', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'ul',
       'br', 'p', 'u'],
     allowedAttributes: {
       a: ['href']
@@ -31,35 +31,60 @@ const InputSanitizer = function () {
   var self = {}
   self.sanitize = function (rawBlip) {
     var blip = trimWhiteSpaces(rawBlip)
-    blip.description = sanitizeHtml(blip.description, relaxedOptions)
-    blip.name = sanitizeHtml(blip.name, restrictedOptions)
-    blip.isNew = sanitizeHtml(blip.isNew, restrictedOptions)
-    blip.ring = sanitizeHtml(blip.ring, restrictedOptions)
-    blip.quadrant = sanitizeHtml(blip.quadrant, restrictedOptions)
+  	//console.log('Rawblip after trimming:')
+  	//console.log(blip)
+    blip.description = sanitizeHtml(blip.Description, relaxedOptions)
+    blip.name = sanitizeHtml(blip.Technology, relaxedOptions)
+    blip.status = sanitizeHtml(blip.Status, restrictedOptions)
+    blip.ring = sanitizeHtml(blip.Ring, restrictedOptions)
+    blip.topic = sanitizeHtml(blip.Theme, restrictedOptions)
+  	blip.tags = blip.Tags.split(';').map(function(tag){return tag.trim();})
 
     return blip
+  }
+
+  self.reducer = function(result, value) {
+	  var processedBlip = self.sanitize(value)
+	  switch(processedBlip.Status)
+	  {
+		  case 'ok':
+		  case 'new':
+		  case 'strike':
+		  case 'moved':
+		  case 'gap':
+			result.push(processedBlip)
+			break
+		  case 'hide':
+		    break
+		  default:
+		    console.log('Unknown status: ' + processedBlip.Status)
+	  }
+	  return result
   }
 
   self.sanitizeForProtectedSheet = function (rawBlip, header) {
     var blip = trimWhiteSpaces(rawBlip)
 
-    const descriptionIndex = header.indexOf('description')
-    const nameIndex = header.indexOf('name')
-    const isNewIndex = header.indexOf('isNew')
-    const quadrantIndex = header.indexOf('quadrant')
-    const ringIndex = header.indexOf('ring')
+    const descriptionIndex = header.indexOf('Description')
+    const nameIndex = header.indexOf('Technology')
+    const statusIndex = header.indexOf('Status')
+    const ringIndex = header.indexOf('Ring')
+    const topicIndex = header.indexOf('Theme')
+  	const tagsIndex = header.indexOf('Tags')
 
     const description = descriptionIndex === -1 ? '' : blip[descriptionIndex]
     const name = nameIndex === -1 ? '' : blip[nameIndex]
-    const isNew = isNewIndex === -1 ? '' : blip[isNewIndex]
+    const status = statusIndex === -1 ? '' : blip[statusIndex]
     const ring = ringIndex === -1 ? '' : blip[ringIndex]
-    const quadrant = quadrantIndex === -1 ? '' : blip[quadrantIndex]
+    const topic = topicIndex === -1 ? '' : blip[topicIndex]
+	  const tags = tagsIndex === -1 ? '' : blip[tagsIndex]
 
     blip.description = sanitizeHtml(description, relaxedOptions)
-    blip.name = sanitizeHtml(name, restrictedOptions)
-    blip.isNew = sanitizeHtml(isNew, restrictedOptions)
+    blip.name = sanitizeHtml(name, relaxedOptions)
+    blip.status = sanitizeHtml(status, restrictedOptions)
     blip.ring = sanitizeHtml(ring, restrictedOptions)
-    blip.quadrant = sanitizeHtml(quadrant, restrictedOptions)
+    blip.topic = sanitizeHtml(topic, restrictedOptions)
+    blip.tags = tags.split(';').map(function(tag){return tag.trim();})
 
     return blip
   }

@@ -8,15 +8,17 @@ const _ = {
 }
 
 const Radar = function () {
-  var self, quadrants, blipNumber, addingQuadrant, alternatives, currentSheetName
+  var self, quadrants, blipNumber, addingQuadrant, alternatives, currentSheetName, tags, queryParams
 
   blipNumber = 0
   addingQuadrant = 0
+  tags = []
+  queryParams = {}
   quadrants = [
-    { order: 'first', startAngle: 90 },
-    { order: 'second', startAngle: 0 },
-    { order: 'third', startAngle: -90 },
-    { order: 'fourth', startAngle: -180 }
+    { order: 'first', startAngle: 95 }
+//    { order: 'second', startAngle: 0 },
+//    { order: 'third', startAngle: -90 },
+//    { order: 'fourth', startAngle: -180 }
   ]
   alternatives = []
   currentSheetName = ''
@@ -24,7 +26,7 @@ const Radar = function () {
 
   function setNumbers (blips) {
     blips.forEach(function (blip) {
-      blip.setNumber(++blipNumber)
+      if(blip.status() != 'gap') blip.setNumber(++blipNumber)
     })
   }
 
@@ -52,9 +54,25 @@ const Radar = function () {
     setNumbers(quadrant.blips())
     addingQuadrant++
   }
+  
+  self.getTags = function() {
+	  return tags
+  }
+  
+  self.setTags = function(inputTags) {
+	  tags = inputTags
+  }
+  
+  self.setQueryParams = function(qp) {
+	  queryParams = qp
+  }
+  
+  self.queryParams = function(key) {
+	  return queryParams[key]
+  }
 
   function allQuadrants () {
-    if (addingQuadrant < 4) { throw new MalformedDataError(ExceptionMessages.LESS_THAN_FOUR_QUADRANTS) }
+    //if (addingQuadrant < 4) { throw new MalformedDataError(ExceptionMessages.LESS_THAN_FOUR_QUADRANTS) }
 
     return _.map(quadrants, 'quadrant')
   }

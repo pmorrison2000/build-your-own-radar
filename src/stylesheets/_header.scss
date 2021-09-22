@@ -11,19 +11,15 @@ header {
 
   .radar-title {
     background-color: $grey-light;
-    padding: 30px 0;
-
+    padding: 10px 0;
     display: table;
     margin: auto;
     width: 100%;
 
     .radar-title__text {
-
       display: table-cell;
-      width: 70%;
-
       text-align: left;
-      padding-left: 10%;
+      padding-left: 10px;
 
       h1 {
         font-size: 55px;
@@ -32,24 +28,6 @@ header {
         line-height: 0.8em;
         margin: 0;
         text-transform: uppercase;
-      }
-    }
-
-    .radar-title__logo {
-      flex: 0 0 30%;
-      margin-left: auto;
-
-      width: 30%;
-      display: table-cell;
-      vertical-align: middle;
-
-      a {
-        border-bottom: none;
-      }
-
-      img {
-        vertical-align: middle;
-        width: 34%;
       }
     }
   }
@@ -147,7 +125,8 @@ header {
   }
 
   #alternative-buttons {
-    margin-bottom: 50px;
+    margin-bottom: 5px;
+	margin-top: 5px;
 
     .highlight {
       border-bottom: none;
@@ -164,24 +143,24 @@ header {
     .multiple-sheet-button {
       margin-right: 10px;
     }
-
-    .search-radar {
-      border: 1px solid #aaa;
-      background-color: inherit;
-      background-image: url("/images/search-logo-2x.svg");
-      background-repeat: no-repeat;
-      background-position: 10px;
-    }
-
-    input {
-      padding-left: 35px;
-      width: 275px;
-    }
   }
 }
 
+.search-radar {
+  border: 1px solid #aaa;
+  background-color: inherit;
+  background-image: url("/images/search-logo-2x.svg");
+  background-repeat: no-repeat;
+  background-position: 10px;
+}
+
+input {
+  padding-left: 35px;
+  width: 275px;
+}  
+
 .ui-autocomplete {
-  width: 275px !important;
+  width: 375px !important;
 
   .ui-autocomplete-quadrant {
     font-size: 14px;
@@ -198,4 +177,15 @@ header {
       padding: 0 10px;
     }
   }
+}
+
+.ui-helper-hidden-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px
 }
