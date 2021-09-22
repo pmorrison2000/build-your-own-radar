@@ -675,7 +675,7 @@ const Radar = function (size, radar) {
       .append('div')
       .attr('class', 'footer-content')
       .append('p')
-      .html('Radar code originally by <a href="https://www.thoughtworks.com"> ThoughtWorks</a>, ' +
+      .html('Radar code originally by <a href="https://www.thoughtworks.com"> Thoughtworks</a>, ' +
       '<a href="https://github.com/thoughtworks/build-your-own-radar">Build Your Own Radar (github)</a> available for download and self-hosting.')
   }
 

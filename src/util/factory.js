@@ -1,7 +1,6 @@
 /* eslint no-constant-condition: "off" */
 
 const d3 = require('d3')
-const Tabletop = require('tabletop')
 const _ = {
   map: require('lodash/map'),
   reduce: require('lodash/reduce'),
@@ -84,21 +83,14 @@ const GoogleSheet = function (queryParams) {
 
   self.build = function () {
     var sheet = new Sheet(sheetReference)
-    sheet.validate(function (error) {
-      if (!error) {
-        Tabletop.init({
-          key: sheet.id,
-          callback: createBlips
-        })
-        return
-      }
+    sheet.validate(function (error, apiKeyEnabled) {
 
       if (error instanceof SheetNotFoundError) {
         plotErrorMessage(error)
         return
       }
 
-      self.authenticate(false)
+      self.authenticate(false, apiKeyEnabled)
     })
 
     function createBlips (__, tabletop) {
@@ -138,9 +130,23 @@ const GoogleSheet = function (queryParams) {
     plotRadar(documentTitle + ' - ' + sheetName, blips, sheetName, sheetNames, queryParams)
   }
 
-  self.authenticate = function (force = false, callback) {
-    GoogleAuth.loadGoogle(function (e) {
-      GoogleAuth.login(_ => {
+  self.authenticate = function (force = false, apiKeyEnabled, callback) {
+    if (!apiKeyEnabled) {
+      GoogleAuth.loadGoogle(function (e) {
+        GoogleAuth.login(_ => {
+          var sheet = new Sheet(sheetReference)
+          sheet.processSheetResponse(sheetName, createBlipsForProtectedSheet, error => {
+            if (error.status === 403) {
+              plotUnauthorizedErrorMessage()
+            } else {
+              plotErrorMessage(error)
+            }
+          })
+          if (callback) { callback() }
+        }, force)
+      })
+    } else {
+      GoogleAuth.loadGoogle(function (e) {
         var sheet = new Sheet(sheetReference)
         sheet.processSheetResponse(sheetName, createBlipsForProtectedSheet, error => {
           if (error.status === 403) {
@@ -150,8 +156,8 @@ const GoogleSheet = function (queryParams) {
           }
         })
         if (callback) { callback() }
-      }, force)
-    })
+      })
+    }
   }
 
   self.init = function () {
@@ -281,7 +287,7 @@ function plotFooter (content) {
     .append('div')
     .attr('class', 'footer-content')
     .append('p')
-    .html('Radar code originally by <a href="https://www.thoughtworks.com"> ThoughtWorks</a>, ' +
+    .html('Radar code originally by <a href="https://www.thoughtworks.com"> Thoughtworks</a>, ' +
       '<a href="https://github.com/thoughtworks/build-your-own-radar">Build Your Own Radar (github)</a> available for download and self-hosting.')
 }
 
