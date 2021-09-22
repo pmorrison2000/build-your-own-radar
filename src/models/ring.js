@@ -2,7 +2,7 @@ const Ring = function (name, order) {
   var self = {}
 
   self.name = function () {
-    return 'Frontier ' + name
+    return name
   }
 
   self.order = function () {
